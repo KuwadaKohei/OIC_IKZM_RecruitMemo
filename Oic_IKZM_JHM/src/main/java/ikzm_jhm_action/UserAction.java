@@ -25,4 +25,15 @@ public class UserAction {
 		return userList;
 
 	}
+
+	public void banUser(String target) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+
+	public void unBanUser(String target) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
 }
