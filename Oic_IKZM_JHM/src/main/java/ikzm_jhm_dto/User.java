@@ -7,8 +7,9 @@ public class User {
 	private String userType;
 	private String name;
 	private boolean isActive;
+	private boolean isAdmin;
 
-	public User(int userId, String googleAccountId, String email, String userType, String name, boolean isActive) {
+	public User(int userId, String googleAccountId, String email, String userType, String name, boolean isActive,boolean isAdmin) {
 		super();
 		this.userId = userId;
 		this.googleAccountId = googleAccountId;
@@ -16,6 +17,7 @@ public class User {
 		this.userType = userType;
 		this.name = name;
 		this.isActive = isActive;
+		this.isAdmin = isAdmin;
 	}
 
 	public User() {
@@ -67,5 +69,13 @@ public class User {
 
 	public void setActive(boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }
