@@ -1,6 +1,7 @@
 package ikzm_jhm_servlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -9,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import ikzm_jhm_action.UserAction;
 import ikzm_jhm_dto.User;
 
 /**
@@ -16,8 +18,8 @@ import ikzm_jhm_dto.User;
  * doGetでユーザーBAN画面(banUser.jsp)へ遷移
  * doPost、Action=Searchでユーザー情報の検索結果を表示、Action=Deleteで該当するユーザー情報の削除を実行
  */
-@WebServlet("/UserManage")
-public class UserManageServlet extends HttpServlet {
+@WebServlet("/User/Suspend")
+public class UserSuspendServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -31,15 +33,79 @@ public class UserManageServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		 //操作の種類を受け取る
 		String action = request.getParameter("action");
+		
+		//検索フォームに入力された文字列を受け取る
 		String searchWord = request.getParameter("searchWord");
+		
+		//制限・制限解除の対象になるユーザーのユーザーIDを受け取る
+		String target = request.getParameter("target");
 
-		User user = new User();
+		UserAction userAction = new UserAction();
 
-		if ("userSearch".equals(action)) {
-			
+		//初期状態、管理者からの検索を受け付け結果を返す
+		if ("search".equals(action)) {
+
+			ArrayList<User> userList = new ArrayList<User>();
+
+			userList = userAction.searchUser(searchWord);
+
+			request.setAttribute("searchResult", userList);
+
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/searchManageUser.jsp");
+			dispatcher.forward(request, response);
+
+			return;
 		}
 
+		//管理者が選択したユーザーを本当に制限するのか確認する。
+		if ("confirmBan".equals(action)) {
+
+			request.setAttribute("target", target);
+
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmBan");
+			dispatcher.forward(request, response);
+			
+			return;
+		}
+
+		//管理者が選択したユーザーの制限を本当にするのかを確認する。
+		if ("confirmUnBan.".equals(action)) {
+
+			request.setAttribute("target", target);
+
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmUnBan");
+			dispatcher.forward(request, response);
+			
+			return;
+		}
+
+		//管理者が確認を承諾し、制限処理を実行する。
+		if ("executeBan".equals(action)) {
+
+			userAction.banUser(target);
+
+			request.setAttribute("target", target);
+
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/successBan.jsp");
+			dispatcher.forward(request, response);
+
+			return;
+		}
+
+		//管理者が確認を承諾し、制限解除処理を確認する。
+		if ("executeUnBan".equals(action)) {
+
+			userAction.unBanUser(target);
+
+			request.setAttribute("target", target);
+
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/successUnBan.jsp");
+			dispatcher.forward(request, response);
+
+			return;
+		}
 	}
 
 }
