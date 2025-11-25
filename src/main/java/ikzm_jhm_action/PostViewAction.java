@@ -17,4 +17,9 @@ public class PostViewAction {
 		PostDAO postDAO = new PostDAO();
 		return postDAO.searchPostListByUserId(userId);
 	}
+
+	public ArrayList<Post> myReportsSearch(int userId,String word) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 }
