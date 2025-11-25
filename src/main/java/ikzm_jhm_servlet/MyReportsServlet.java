@@ -33,18 +33,21 @@ public class MyReportsServlet extends HttpServlet {
 		PostViewAction pva = new PostViewAction();
 		
 		int userId = user.getUserId();
+		ArrayList<Post> postList = new ArrayList<Post>();
 		
 		if(action == null) {
 			
-			ArrayList<Post> postList = pva.myReports(userId);
-			
-			session.setAttribute("myReports", postList);
+			postList = pva.myReports(userId);
 			
 		}
 		
 		if("search".equals(action)) {
 			
+			postList = pva.myReportsSearch(userId,searchWord);
+
 		}
+		
+		request.setAttribute("myReports", postList);
 		
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/MyReports.jsp");
 		dispatcher.forward(request, response);
