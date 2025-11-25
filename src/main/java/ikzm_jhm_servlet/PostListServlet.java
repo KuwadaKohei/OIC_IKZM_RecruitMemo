@@ -10,11 +10,11 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 一覧データの取得(ReportAction)
- * index.jspへの遷移を行うクラス。
+ * ホーム画面に相当し、index.jspへの遷移を行うクラス。
  * 
  */
 @WebServlet({ "/ReportList", "/index.jsp", "/Home" })
-public class ReportListServlet extends HttpServlet {
+public class PostListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)

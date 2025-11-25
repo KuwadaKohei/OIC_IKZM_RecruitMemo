@@ -20,7 +20,7 @@ import ikzm_jhm_dto.User;
  * doPostのみ実装、受け取ったPostIdの値に対応する投稿情報を削除する(PostReportAction.deleteReport(postId)に問い合わせる
  */
 @WebServlet("/DeleteReport")
-public class DeleteReportServlet extends HttpServlet {
+public class PostDeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
