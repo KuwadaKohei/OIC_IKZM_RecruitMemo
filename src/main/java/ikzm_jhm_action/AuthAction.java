@@ -126,9 +126,11 @@ public class AuthAction {
 		SecureRandom random = new SecureRandom();
 		int stateByteLength = 16;
 
+		//実際の文字列生成
 		byte[] bytes = new byte[stateByteLength];
 		random.nextBytes(bytes);
 
+		//Httpリクエストで使用するため、URLとして使えるようにエンコード
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
 
 	}
