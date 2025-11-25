@@ -93,7 +93,7 @@ public class AuthAction {
 
 			if (user == null) {
 				int newId = userDAO.insertGoogleUser(accountId, email, userType, name, true);
-				user = new User(newId, accountId, email, userType, name, true);
+				user = new User(newId, accountId, email, userType, name, true,false);
 				newUser = true;
 			}
 
