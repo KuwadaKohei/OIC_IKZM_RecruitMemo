@@ -11,6 +11,7 @@ public class PostDAO {
 		return null;
 	}
 	
+	//
 	public ArrayList<Post> searchPostListByUserId(int userId){
 		
 	}
