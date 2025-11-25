@@ -27,7 +27,7 @@ public class UserDAO {
 		return null;
 	}
 
-	//ユーザー名を使用してユーザーリストを取得する
+	//名前を使用してユーザーリストを取得する
 	public ArrayList<User> findListByUsername(String email) {
 		// TODO 自動生成されたメソッド・スタブ
 		return null;
