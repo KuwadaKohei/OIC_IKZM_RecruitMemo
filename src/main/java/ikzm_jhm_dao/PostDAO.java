@@ -9,7 +9,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import ikzm_jhm_dto.Post;
@@ -21,6 +23,8 @@ public class PostDAO {
 		Connection con = ConnectionDAO.createConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
+		
+		Post post = new Post();
 		
 		int postId = 0;
 		int userId = 0;
@@ -43,15 +47,42 @@ public class PostDAO {
 				pstmt.setInt(1 , target);
 				rs = pstmt.executeQuery();
 				while(rs.next() == true) {
-					postId = rs.getInt(postId);
-					userId = postId = rs.getInt(userId);
-					departmentId = rs.getInt(departmentId);
-					methodId = rs.getInt(methodId);
-					recruitmentNo = rs.getString(recruitmentNo);
-					companyName = rs.getString(companyName);
-					venueAddress = rs.getString(venueAddress);
-					examDate = rs.getDate(examDate);
+					postId = rs.getInt("postId");
+					userId = postId = rs.getInt("userId");
+					departmentId = rs.getInt("departmentId");
+					methodId = rs.getInt("methodId");
+					recruitmentNo = rs.getString("recruitmentNo");
+					companyName = rs.getString("companyName");
+					venueAddress = rs.getString("venueAddress");
+					Date date_e = rs.getDate("examDate");
+					grade = rs.getInt("grade");
+					isAnonymous = rs.getBoolean("isAnonymous");
+					Date date_c = rs.getDate("createAt");
+					Date date_u = rs.getDate("updatedAt");
+					//List型のexamSelectionの処理//
+					
+					//localDate型に変換
+					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
+					
+					//localDateTime型に変換
+					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
+					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
 				}
+				
+				//Postの中身を格納
+				post.setPostId(postId);
+				post.setUserId(userId);
+				post.setDepartmentId(departmentId);
+				post.setMethodId(methodId);
+				post.setRecruitmentNo(recruitmentNo);
+				post.setCompanyName(companyName);
+				post.setVenueAddress(venueAddress);
+				post.setExamDate(examDate);
+				post.setGrade(grade);
+				post.setAnonymous(isAnonymous);
+				post.setCreateAt(createAt);
+				post.setUpdatedAt(updatedAt);
+				post.setExamSelection(examSelection);
 			}
 			rs.close();
 			pstmt.close();
