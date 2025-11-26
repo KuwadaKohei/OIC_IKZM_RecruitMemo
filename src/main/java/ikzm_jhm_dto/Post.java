@@ -18,10 +18,11 @@ public class Post {
 	private LocalDateTime createAt;
 	private LocalDateTime updatedAt;
 	private List<PostExamSelection> examSelection;
-
+	private boolean isActive;
+	
 	public Post(int postId, int userId, int departmentId, int methodId, String recruitmentNo, String companyName,
 			String venueAddress, LocalDate examDate, int grade, boolean isAnonymous, LocalDateTime createAt,
-			LocalDateTime updatedAt, List<PostExamSelection> examSelection) {
+			LocalDateTime updatedAt, List<PostExamSelection> examSelection, boolean isActive) {
 		super();
 		this.postId = postId;
 		this.userId = userId;
@@ -36,6 +37,7 @@ public class Post {
 		this.createAt = createAt;
 		this.updatedAt = updatedAt;
 		this.examSelection = examSelection;
+		this.isActive = isActive;
 	}
 
 	public Post() {
@@ -143,6 +145,14 @@ public class Post {
 
 	public void setExamSelection(List<PostExamSelection> examSelection) {
 		this.examSelection = examSelection;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
 }
