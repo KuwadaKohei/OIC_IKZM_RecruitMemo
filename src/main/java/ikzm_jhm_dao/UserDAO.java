@@ -64,8 +64,53 @@ public class UserDAO {
 	}
 
 	//GoogleアカウントIDを使用してユーザーレコードを取得する
-	public User findByGoogleAccountId(String targetAccountId) {
-		return null;
+	public User findByGoogleAccountId(String targetAccountId) throws Exception {
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		User user = new User();
+		
+		int userId = 0;
+		String email = null;
+		String userType = null;
+		String name = null;
+		boolean isActive = false;
+		boolean isAdmin = false;
+		
+		try {
+			if(con != null) {
+				String sql = "SELECT * FROM USER WHERE GOOGLEACCOUNTID = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1 , targetAccountId);
+				rs = pstmt.executeQuery();
+				while(rs.next() == true) {
+					userId = rs.getInt("userId");
+					email = rs.getString("email");
+					userType = rs.getString("userType");
+					name = rs.getString("name");
+					isActive = rs.getBoolean("isActive");
+					isAdmin = rs.getBoolean("isAdmin");
+				}
+				
+				//Userの中身を格納
+				user.setUserId(userId);
+				user.setGoogleAccountId(targetAccountId);
+				user.setEmail(email);
+				user.setUserType(userType);
+				user.setName(name);
+				user.setActive(isActive);
+				user.setAdmin(isAdmin);
+			}
+			rs.close();
+			pstmt.close();
+			return user;
+		}catch(SQLException e) {
+			//情報取得に失敗(未規定)
+			throw new Exception("DB-2003");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
 
 	//メールアドレスを使用してユーザーリストを取得する
