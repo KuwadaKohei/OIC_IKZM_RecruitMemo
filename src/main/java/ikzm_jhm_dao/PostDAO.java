@@ -180,9 +180,26 @@ public class PostDAO {
 		}	
 	}
 
-	public void deletePost(int postId) {
-		// TODO 自動生成されたメソッド・スタブ
+	//メモを削除する(疑似的に)
+	public void deletePost(int postId) throws Exception {
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
 		
+		try {
+			if(con != null) {
+				String sql = "UPDATE POST SET ISACTIVE = false WHERE POSTID = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1 , postId);
+				pstmt.executeUpdate();
+			}
+			pstmt.close();
+		}catch(SQLException e) {
+			//情報削除に失敗(未規定)
+			throw new Exception("DB-2003");
+			
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
 
 	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
