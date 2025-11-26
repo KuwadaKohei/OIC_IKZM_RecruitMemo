@@ -3,20 +3,64 @@
 /***************************/
 package ikzm_jhm_dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import ikzm_jhm_dto.User;
 
-/*
- * クラス説明
- * Userテーブルとのやり取りを担うクラス
- */
 public class UserDAO {
 
 	//ユーザーIDを使用してユーザーレコードを取得する
-	public User findById(int searchWordInt) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	public User findById(int searchWordInt) throws Exception {
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		User user = new User();
+		
+		String googleAccountId = null;
+		String email = null;
+		String userType = null;
+		String name = null;
+		boolean isActive = false;
+		boolean isAdmin = false;
+		
+		try {
+			if(con != null) {
+				String sql = "SELECT * FROM USER WHERE USERID = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1 , searchWordInt);
+				rs = pstmt.executeQuery();
+				while(rs.next() == true) {
+					googleAccountId = rs.getString("googleAccountId");
+					email = rs.getString("email");
+					userType = rs.getString("userType");
+					name = rs.getString("name");
+					isActive = rs.getBoolean("isActive");
+					isAdmin = rs.getBoolean("isAdmin");
+				}
+				
+				//Userの中身を格納
+				user.setUserId(searchWordInt);
+				user.setGoogleAccountId(googleAccountId);
+				user.setEmail(email);
+				user.setUserType(userType);
+				user.setName(name);
+				user.setActive(isActive);
+				user.setAdmin(isAdmin);
+			}
+			rs.close();
+			pstmt.close();
+			return user;
+		}catch(SQLException e) {
+			//情報取得に失敗(未規定)
+			throw new Exception("DB-2003");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
 
 	//GoogleアカウントIDを使用してユーザーレコードを取得する
