@@ -206,8 +206,53 @@ public class UserDAO {
 	}
 
 	//新規ログインユーザーを登録し、ユーザーIDを返す
-	public int insertGoogleUser(String accountId, String email, String userType, String name, boolean isActive) {
-		return 0;
+	public int insertGoogleUser(String accountId, String email, String userType, String name, boolean isActive) throws Exception{
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt_1 = null;
+		PreparedStatement pstmt_2 = null;
+		ResultSet rs = null;
+		
+		int userId = 0;
+		
+		try {
+			if(con != null) {
+				//ユーザを新規登録する
+				String sql_1 = "INSERT INTO USER(accountId , email , userType , name , isActive) VALUES(?,?,?,?,?)";
+				pstmt_1 = con.prepareStatement(sql_1);
+				pstmt_1.setString(1 , accountId);
+				pstmt_1.setString(2 , email);
+				pstmt_1.setString(3 , userType);
+				pstmt_1.setString(4 , name);
+				pstmt_1.setBoolean(5 , isActive);
+				
+				pstmt_1.executeUpdate();
+				
+				//登録したユーザのuserIdを取得する
+				String sql_2 = "SELECT * FROM USER WHERE ACCOUNTID = ? AND EMAIL = ? AND USERTYPE = ? AND NAME = ? AND ISACTIVE = ?";
+				pstmt_2 = con.prepareStatement(sql_2);
+				pstmt_2.setString(1 , accountId);
+				pstmt_2.setString(2 , email);
+				pstmt_2.setString(3 , userType);
+				pstmt_2.setString(4 , name);
+				pstmt_2.setBoolean(5 , isActive);
+				
+				rs = pstmt_2.executeQuery();
+				while(rs.next() == true) {
+					userId = rs.getInt("userId");
+				}
+				
+			}
+			pstmt_1.close();
+			pstmt_2.close();
+			
+			return userId;
+		}catch(SQLException e) {
+			//情報登録に失敗(未規定)
+			e.getStackTrace();
+			throw new Exception("DB-2006");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
 
 	//引数のユーザーIDのレコードに学科が登録されているか確認する
