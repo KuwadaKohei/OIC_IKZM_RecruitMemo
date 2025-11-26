@@ -1,6 +1,8 @@
 package ikzm_jhm_dao;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import ikzm_jhm_dto.Post;
 
@@ -19,6 +21,23 @@ public class PostDAO {
 	public void deletePost(int postId) {
 		// TODO 自動生成されたメソッド・スタブ
 		
+	}
+
+	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
+	public List<Post> searchPostByRecruitmentNo(int userId, String substring) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	//POSTテーブルからユーザーIDと日付を使用してPostリストを取得する
+	public List<Post> searchPostByExamDate(int userId, LocalDate date) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	public List<Post> searchPostByKeyword(int userId, String term) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 
 }
