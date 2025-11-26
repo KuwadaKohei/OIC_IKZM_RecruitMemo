@@ -9,7 +9,7 @@ public class Post {
 	private int userId;
 	private int departmentId;
 	private int methodId;
-	private String recruitmentNo;
+	private int recruitmentNo;
 	private String companyName;
 	private String venueAddress;
 	private LocalDate examDate;
