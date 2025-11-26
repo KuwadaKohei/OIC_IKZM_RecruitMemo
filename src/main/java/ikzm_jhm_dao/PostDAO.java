@@ -26,7 +26,6 @@ public class PostDAO {
 		
 		Post post = new Post();
 		
-		int postId = 0;
 		int userId = 0;
 		int departmentId = 0;
 		int methodId = 0;
@@ -47,8 +46,7 @@ public class PostDAO {
 				pstmt.setInt(1 , target);
 				rs = pstmt.executeQuery();
 				while(rs.next() == true) {
-					postId = rs.getInt("postId");
-					userId = postId = rs.getInt("userId");
+					userId = rs.getInt("userId");
 					departmentId = rs.getInt("departmentId");
 					methodId = rs.getInt("methodId");
 					recruitmentNo = rs.getString("recruitmentNo");
@@ -70,7 +68,7 @@ public class PostDAO {
 				}
 				
 				//Postの中身を格納
-				post.setPostId(postId);
+				post.setPostId(target);
 				post.setUserId(userId);
 				post.setDepartmentId(departmentId);
 				post.setMethodId(methodId);
