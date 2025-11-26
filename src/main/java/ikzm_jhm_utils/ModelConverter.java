@@ -22,10 +22,7 @@ public class ModelConverter {
 
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	// =================================================================
-	// 1. 表示系 (Output: DTO -> ViewModel)
-	// =================================================================
-
+	//表示系 (Output: DTO -> ViewModel)
 	public static SearchResultViewModel toSearchResultViewModel(List<Post> posts) {
 		List<SearchResultViewModel.Summary> summaries = new ArrayList<>();
 
@@ -44,7 +41,6 @@ public class ModelConverter {
 					}
 				}
 
-				// Post.recruitmentNo は int なのでそのまま使用
 				int recruitmentNo = post.getRecruitmentNo();
 
 				summaries.add(new SearchResultViewModel.Summary(
@@ -55,7 +51,6 @@ public class ModelConverter {
 						recruitmentNo,
 						post.getCompanyName(),
 						post.getExamDate(),
-						// adviceText は削除したので引数から除去
 						selectedExamIds,
 						detailTexts));
 			}
@@ -86,7 +81,6 @@ public class ModelConverter {
 			}
 		}
 
-		// Post.recruitmentNo は int
 		int recruitmentNo = post.getRecruitmentNo();
 
 		LocalDate resultDate = (detail != null) ? detail.getResultDate() : null;
@@ -111,9 +105,7 @@ public class ModelConverter {
 				examItems);
 	}
 
-	// =================================================================
-	// 2. 保存系 (Input: Form -> DTO)
-	// =================================================================
+	//保存系 (Input: Form -> DTO)
 
 	public static Post toPostDto(ReportForm form, int userId) {
 		Post post = new Post();
@@ -160,9 +152,7 @@ public class ModelConverter {
 		return list;
 	}
 
-	// =================================================================
-	// 3. 編集初期表示系 (Load: DTO -> Form)
-	// =================================================================
+	//編集初期表示系 (Load: DTO -> Form)
 
 	public static ReportForm toReportForm(Post post, PostDetail detail) {
 		ReportForm form = new ReportForm();
@@ -207,11 +197,8 @@ public class ModelConverter {
 
 		return form;
 	}
-
-	// =================================================================
+	
 	// ヘルパーメソッド
-	// =================================================================
-
 	private static LocalDate parseDate(String dateStr) {
 		if (dateStr == null || dateStr.isEmpty())
 			return null;
