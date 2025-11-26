@@ -160,9 +160,49 @@ public class UserDAO {
 	}
 
 	//名前を使用してユーザーリストを取得する
-	public ArrayList<User> findListByUsername(String email) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	public ArrayList<User> findListByUsername(String name) throws Exception {
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<User> list = new ArrayList<>();
+		
+		int userId = 0;
+		String googleAccountId = null;
+		String email = null;
+		String userType = null;
+		boolean isActive = false;
+		boolean isAdmin = false;
+		
+		try {
+			if(con != null) {
+				String sql = "SELECT * FROM USER WHERE EMAIL = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1 , name);
+				rs = pstmt.executeQuery();
+				while(rs.next() == true) {
+					userId = rs.getInt("userId");
+					googleAccountId = rs.getString("googleAccountId");
+					email = rs.getString("email");
+					userType = rs.getString("userType");
+					isActive = rs.getBoolean("isActive");
+					isAdmin = rs.getBoolean("isAdmin");
+					
+					//Userインスタンスを生成
+					User user = new User(userId , googleAccountId , email , userType , name , isActive , isAdmin);
+					
+					//listに格納
+					list.add(user);
+				}
+			}
+			rs.close();
+			pstmt.close();
+			return list;
+		}catch(SQLException e) {
+			//情報取得に失敗(未規定)
+			throw new Exception("DB-2003");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
 
 	//新規ログインユーザーを登録し、ユーザーIDを返す
