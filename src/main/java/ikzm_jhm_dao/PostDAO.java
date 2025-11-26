@@ -3,6 +3,7 @@
 /***************************/
 package ikzm_jhm_dao;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,6 +39,7 @@ public class PostDAO {
 		LocalDateTime createAt = null;
 		LocalDateTime updatedAt = null;
 		List<PostExamSelection> examSelection = null;
+		boolean isActive = false;
 		
 		try {
 			if(con != null) {
@@ -58,6 +60,7 @@ public class PostDAO {
 					Date date_c = rs.getDate("createAt");
 					Date date_u = rs.getDate("updatedAt");
 					//List型のexamSelectionの処理//
+					isActive = rs.getBoolean("isActive");
 					
 					//localDate型に変換
 					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
@@ -81,6 +84,7 @@ public class PostDAO {
 				post.setCreateAt(createAt);
 				post.setUpdatedAt(updatedAt);
 				post.setExamSelection(examSelection);
+				post.setActive(isActive);
 			}
 			rs.close();
 			pstmt.close();
@@ -112,6 +116,7 @@ public class PostDAO {
 		LocalDateTime createAt = null;
 		LocalDateTime updatedAt = null;
 		List<PostExamSelection> examSelection = null;
+		boolean isActive = false;
 		
 		try {
 			if(con != null) {
@@ -132,6 +137,7 @@ public class PostDAO {
 					Date date_c = rs.getDate("createAt");
 					Date date_u = rs.getDate("updatedAt");
 					//List型のexamSelectionの処理//
+					isActive = rs.getBoolean("isActive");
 					
 					//localDate型に変換
 					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
@@ -154,7 +160,8 @@ public class PostDAO {
 							isAnonymous,
 							createAt,
 							updatedAt,
-							examSelection
+							examSelection,
+							isActive
 					);
 					
 					//listに格納
@@ -176,6 +183,23 @@ public class PostDAO {
 	public void deletePost(int postId) {
 		// TODO 自動生成されたメソッド・スタブ
 		
+	}
+
+	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
+	public List<Post> searchPostByRecruitmentNo(int userId, String substring) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	//POSTテーブルからユーザーIDと日付を使用してPostリストを取得する
+	public List<Post> searchPostByExamDate(int userId, LocalDate date) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	public List<Post> searchPostByKeyword(int userId, String term) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
 	}
 
 }
