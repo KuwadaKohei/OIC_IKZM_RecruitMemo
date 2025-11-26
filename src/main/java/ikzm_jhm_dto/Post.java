@@ -20,7 +20,7 @@ public class Post {
 	private List<PostExamSelection> examSelection;
 	private boolean isActive;
 	
-	public Post(int postId, int userId, int departmentId, int methodId, String recruitmentNo, String companyName,
+	public Post(int postId, int userId, int departmentId, int methodId, int recruitmentNo, String companyName,
 			String venueAddress, LocalDate examDate, int grade, boolean isAnonymous, LocalDateTime createAt,
 			LocalDateTime updatedAt, List<PostExamSelection> examSelection, boolean isActive) {
 		super();
@@ -75,11 +75,11 @@ public class Post {
 		this.methodId = methodId;
 	}
 
-	public String getRecruitmentNo() {
+	public int getRecruitmentNo() {
 		return recruitmentNo;
 	}
 
-	public void setRecruitmentNo(String recruitmentNo) {
+	public void setRecruitmentNo(int recruitmentNo) {
 		this.recruitmentNo = recruitmentNo;
 	}
 
