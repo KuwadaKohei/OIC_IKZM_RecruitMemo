@@ -18,7 +18,7 @@ import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostExamSelection;
 
 public class PostDAO {
-
+	//postIdをキーにしてメモ検索
 	public Post searchPostById(int target) throws Exception {
 		Connection con = ConnectionDAO.createConnection();
 		PreparedStatement pstmt = null;
@@ -95,9 +95,84 @@ public class PostDAO {
 		}
 	}
 	
-	//
-	public ArrayList<Post> searchPostListByUserId(int userId){
+	//userIdをキーにしてメモ検索
+	public ArrayList<Post> searchPostListByUserId(int userId) throws Exception {
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		ArrayList<Post> list = new ArrayList<>();
 		
+		int postId = 0;
+		int departmentId = 0;
+		int methodId = 0;
+		String recruitmentNo = null;
+		String companyName = null;
+		String venueAddress = null;
+		LocalDate examDate = null;
+		int grade = 0;
+		boolean isAnonymous = false;
+		LocalDateTime createAt = null;
+		LocalDateTime updatedAt = null;
+		List<PostExamSelection> examSelection = null;
+		
+		try {
+			if(con != null) {
+				String sql = "SELECT * FROM POST WHERE USERID = ?";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1 , userId);
+				rs = pstmt.executeQuery();
+				while(rs.next() == true) {
+					postId = rs.getInt("postId");
+					departmentId = rs.getInt("departmentId");
+					methodId = rs.getInt("methodId");
+					recruitmentNo = rs.getString("recruitmentNo");
+					companyName = rs.getString("companyName");
+					venueAddress = rs.getString("venueAddress");
+					Date date_e = rs.getDate("examDate");
+					grade = rs.getInt("grade");
+					isAnonymous = rs.getBoolean("isAnonymous");
+					Date date_c = rs.getDate("createAt");
+					Date date_u = rs.getDate("updatedAt");
+					//List型のexamSelectionの処理//
+					
+					//localDate型に変換
+					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
+					
+					//localDateTime型に変換
+					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
+					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
+					
+					//Postインスタンスを生成
+					Post post = new Post(
+							postId,
+							userId,
+							departmentId,
+							methodId,
+							recruitmentNo,
+							companyName,
+							venueAddress,
+							examDate,
+							grade,
+							isAnonymous,
+							createAt,
+							updatedAt,
+							examSelection
+					);
+					
+					//listに格納
+					list.add(post);
+					
+				}
+			}
+			rs.close();
+			pstmt.close();
+			return list;
+		}catch(SQLException e) {
+			//情報取得に失敗(未規定)
+			throw new Exception("DB-2003");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}	
 	}
 
 	public void deletePost(int postId) {
