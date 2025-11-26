@@ -292,8 +292,10 @@ public class PostDAO {
 		ResultSet rs = null;
 		ArrayList<Post> list = new ArrayList<>();
 		
+		//LocalDate→String→java.sql.Dateに変換
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		Date date = simpleDateFormat.parse(examDate.toString());
+		String date = simpleDateFormat.format(examDate.toString());
+		java.sql.Date date_sql = java.sql.Date.valueOf(date);
 		
 		int postId = 0;
 		int departmentId = 0;
@@ -313,7 +315,7 @@ public class PostDAO {
 				String sql = "SELECT * FROM POST WHERE USERID = ? AND RECURUITMENTNO = ?";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , userId);
-				pstmt.setDate(2 , date);
+				pstmt.setDate(2 , date_sql);
 				rs = pstmt.executeQuery();
 				while(rs.next() == true) {
 					postId = rs.getInt("postId");
@@ -343,7 +345,7 @@ public class PostDAO {
 							recruitmentNo,
 							companyName,
 							venueAddress,
-							date,
+							examDate,
 							grade,
 							isAnonymous,
 							createAt,
