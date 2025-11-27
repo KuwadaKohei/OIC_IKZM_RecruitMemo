@@ -8,10 +8,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostDetail;
 import ikzm_jhm_dto.PostExamSelection;
-import ikzm_jhm_model.ReportForm;
+import ikzm_jhm_model.PostForm;
 import ikzm_jhm_viewmodel.PostReportViewModel;
 import ikzm_jhm_viewmodel.SearchResultViewModel;
 
@@ -107,7 +109,7 @@ public class ModelConverter {
 
 	//保存系 (Input: Form -> DTO)
 
-	public static Post toPostDto(ReportForm form, int userId) {
+	public static Post toPostDto(PostForm form, int userId) {
 		Post post = new Post();
 		post.setPostId(form.getPostId());
 		post.setUserId(userId);
@@ -126,7 +128,7 @@ public class ModelConverter {
 		return post;
 	}
 
-	public static PostDetail toPostDetailDto(ReportForm form) {
+	public static PostDetail toPostDetailDto(PostForm form) {
 		PostDetail detail = new PostDetail();
 		detail.setPostId(form.getPostId());
 		detail.setAdviceText(form.getAdviceText());
@@ -137,7 +139,7 @@ public class ModelConverter {
 		return detail;
 	}
 
-	public static List<PostExamSelection> toSelectionList(ReportForm form) {
+	public static List<PostExamSelection> toSelectionList(PostForm form) {
 		List<PostExamSelection> list = new ArrayList<>();
 
 		if (form.getSelectedExamIds() != null) {
@@ -154,8 +156,8 @@ public class ModelConverter {
 
 	//編集初期表示系 (Load: DTO -> Form)
 
-	public static ReportForm toReportForm(Post post, PostDetail detail) {
-		ReportForm form = new ReportForm();
+	public static PostForm toPostForm(Post post, PostDetail detail) {
+		PostForm form = new PostForm();
 		form.setPostId(post.getPostId());
 		form.setCompanyName(post.getCompanyName());
 		form.setVenueAddress(post.getVenueAddress());
@@ -197,7 +199,62 @@ public class ModelConverter {
 
 		return form;
 	}
-	
+
+	//リクエスト解析系 (Request -> Form)
+
+	//HTTPリクエストのパラメータを解析し、PostFormオブジェクトを作成する
+
+	public static PostForm toPostForm(HttpServletRequest request) {
+		PostForm form = new PostForm();
+
+		// 基本的な文字列項目
+		form.setCompanyName(request.getParameter("companyName"));
+		form.setExamDateStr(request.getParameter("examDateStr"));
+		form.setVenueAddress(request.getParameter("venueAddress"));
+		form.setRecruitmentNoStr(request.getParameter("recruitmentNoStr"));
+		form.setAdviceText(request.getParameter("adviceText"));
+
+		// 数値型 (パースエラー対策込みの変換)
+		form.setDepartmentId(parseIntSafe(request.getParameter("departmentId")));
+		form.setMethodId(parseIntSafe(request.getParameter("methodId")));
+		form.setGrade(parseIntSafe(request.getParameter("grade")));
+
+		// チェックボックス (boolean)
+		form.setAnonymous("true".equals(request.getParameter("isAnonymous")));
+
+		// 詳細情報
+		form.setResultDateStr(request.getParameter("resultDateStr"));
+		form.setScheduledHiresStr(request.getParameter("scheduledHiresStr"));
+		form.setTotalApplicantsStr(request.getParameter("totalApplicantsStr"));
+
+		// --- 試験選択情報の複雑なマッピング ---
+
+		// 1. チェックされたIDリスト (selectedExamIds)
+		String[] selectedIds = request.getParameterValues("selectedExamIds");
+		List<Integer> idList = new ArrayList<>();
+		if (selectedIds != null) {
+			for (String s : selectedIds) {
+				int id = parseIntSafe(s);
+				if (id > 0)
+					idList.add(id);
+			}
+		}
+		form.setSelectedExamIds(idList);
+
+		// 2. 詳細記述マップ (examDetails)
+		// name="detail_101" のようなパラメータを取得
+		Map<Integer, String> detailMap = new HashMap<>();
+		for (Integer id : idList) {
+			String detail = request.getParameter("detail_" + id);
+			if (detail != null && !detail.isBlank()) {
+				detailMap.put(id, detail);
+			}
+		}
+		form.setExamDetails(detailMap);
+
+		return form;
+	}
+
 	// ヘルパーメソッド
 	private static LocalDate parseDate(String dateStr) {
 		if (dateStr == null || dateStr.isEmpty())
