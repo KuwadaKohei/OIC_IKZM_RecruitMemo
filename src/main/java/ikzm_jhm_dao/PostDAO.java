@@ -12,15 +12,15 @@ public class PostDAO {
 		// TODO 自動生成されたメソッド・スタブ
 		return null;
 	}
-	
+
 	//
-	public ArrayList<Post> searchPostListByUserId(int userId){
-		
+	public ArrayList<Post> searchPostListByUserId(int userId) {
+
 	}
 
 	public void deletePost(int postId) {
 		// TODO 自動生成されたメソッド・スタブ
-		
+
 	}
 
 	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
@@ -41,8 +41,12 @@ public class PostDAO {
 	}
 
 	public List<Post> findAll() {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+		/*SQLクエリ
+		SELECT * FROM Posts 
+		WHERE is_deleted = false  -- 論理削除されていないもの
+		AND exam_date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR) -- 過去3年以内
+		ORDER BY created_at DESC; -- 作成日時の降順（新しい順）
+		 */
 	}
 
 	public List<Post> searchPostByExamDate(LocalDate date) {
