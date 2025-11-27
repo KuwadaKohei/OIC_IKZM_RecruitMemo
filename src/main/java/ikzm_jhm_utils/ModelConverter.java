@@ -24,7 +24,7 @@ public class ModelConverter {
 
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	//表示系 (Output: DTO -> ViewModel)
+	//表示系 (Output: DTO → ViewModel)
 	public static SearchResultViewModel toSearchResultViewModel(List<Post> posts) {
 		List<SearchResultViewModel.Summary> summaries = new ArrayList<>();
 
@@ -107,20 +107,18 @@ public class ModelConverter {
 				examItems);
 	}
 
-	//保存系 (Input: Form -> DTO)
+	//保存系 (Input: Form → DTO)
 
 	public static Post toPostDto(PostForm form, int userId) {
 		Post post = new Post();
+		
 		post.setPostId(form.getPostId());
 		post.setUserId(userId);
 		post.setCompanyName(form.getCompanyName());
 		post.setVenueAddress(form.getVenueAddress());
 		post.setDepartmentId(form.getDepartmentId());
 		post.setMethodId(form.getMethodId());
-
-		// Form(String) -> DTO(int) への変換
 		post.setRecruitmentNo(parseIntSafe(form.getRecruitmentNoStr()));
-
 		post.setGrade(form.getGrade());
 		post.setAnonymous(form.isAnonymous());
 		post.setExamDate(parseDate(form.getExamDateStr()));
@@ -130,6 +128,7 @@ public class ModelConverter {
 
 	public static PostDetail toPostDetailDto(PostForm form) {
 		PostDetail detail = new PostDetail();
+		
 		detail.setPostId(form.getPostId());
 		detail.setAdviceText(form.getAdviceText());
 		detail.setResultDate(parseDate(form.getResultDateStr()));
@@ -148,13 +147,14 @@ public class ModelConverter {
 				if (form.getExamDetails() != null) {
 					detailText = form.getExamDetails().get(contentId);
 				}
-				list.add(new PostExamSelection(contentId, detailText));
+				//第一引数であるpostIdは、投稿未登録時点では存在しないため0
+				list.add(new PostExamSelection(0,contentId, detailText));
 			}
 		}
 		return list;
 	}
 
-	//編集初期表示系 (Load: DTO -> Form)
+	//編集初期表示系 (Load: DTO → Form)
 
 	public static PostForm toPostForm(Post post, PostDetail detail) {
 		PostForm form = new PostForm();
@@ -164,7 +164,7 @@ public class ModelConverter {
 		form.setDepartmentId(post.getDepartmentId());
 		form.setMethodId(post.getMethodId());
 
-		// DTO(int) -> Form(String)
+		// DTO(int) → Form(String)
 		form.setRecruitmentNoStr(String.valueOf(post.getRecruitmentNo()));
 
 		form.setGrade(post.getGrade());
@@ -200,7 +200,7 @@ public class ModelConverter {
 		return form;
 	}
 
-	//リクエスト解析系 (Request -> Form)
+	//リクエスト解析系 (Request → Form)
 
 	//HTTPリクエストのパラメータを解析し、PostFormオブジェクトを作成する
 
