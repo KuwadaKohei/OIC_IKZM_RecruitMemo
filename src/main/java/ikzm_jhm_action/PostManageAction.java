@@ -2,11 +2,12 @@ package ikzm_jhm_action;
 
 import ikzm_jhm_dao.PostDAO;
 import ikzm_jhm_dto.Post;
+import ikzm_jhm_model.PostForm;
 
 public class PostManageAction {
 	
 	//新規投稿処理（複数DAO呼び出し、トランザクション管理)
-	public int createPost(ReportForm form) {
+	public boolean createPost(PostForm form,int userId) {
 		
 	}
 
