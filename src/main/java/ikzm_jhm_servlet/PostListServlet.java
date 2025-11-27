@@ -31,11 +31,11 @@ public class PostListServlet extends HttpServlet {
 
 		if (searchWord != null && !searchWord.isBlank()) {
 
-			viewModel = reportAction.searchReports(searchWord);
+			viewModel = reportAction.searchPosts(searchWord);
 
 		} else {
 
-			viewModel = reportAction.getReportList();
+			viewModel = reportAction.getPostList();
 		}
 
 		request.setAttribute("postList", viewModel);
