@@ -10,7 +10,7 @@ import ikzm_jhm_utils.ModelConverter;
 import ikzm_jhm_viewmodel.PostReportViewModel;
 import ikzm_jhm_viewmodel.SearchResultViewModel;
 
-public class ReportAction {
+public class PostAction {
 
 	//一覧/検索リスト取得、ViewModel変換
 	public SearchResultViewModel getReportList() {
