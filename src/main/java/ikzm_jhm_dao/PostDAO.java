@@ -40,4 +40,24 @@ public class PostDAO {
 		return null;
 	}
 
+	public List<Post> findAll() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	public List<Post> searchPostByExamDate(LocalDate date) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	public List<Post> searchPostByRecruitmentNo(String substring) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
+	public List<Post> searchPostByKeyword(String term) {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
+
 }
