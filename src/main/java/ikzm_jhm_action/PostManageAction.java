@@ -30,7 +30,7 @@ public class PostManageAction {
 			post.setActive(true);
 
 			//postテーブルへINSERT
-			int newPostId = postDao.InsertPost(post);
+			int newPostId = postDao.insertPost(post);
 
 			if (newPostId == 0) {
 				//ID取得失敗
