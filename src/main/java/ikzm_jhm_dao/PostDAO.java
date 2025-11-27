@@ -64,4 +64,9 @@ public class PostDAO {
 		return null;
 	}
 
+	public int insertPost(Post post) {
+		// TODO 自動生成されたメソッド・スタブ
+		return 0;
+	}
+
 }
