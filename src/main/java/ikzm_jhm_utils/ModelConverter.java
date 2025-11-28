@@ -14,7 +14,7 @@ import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostDetail;
 import ikzm_jhm_dto.PostExamSelection;
 import ikzm_jhm_model.PostForm;
-import ikzm_jhm_viewmodel.PostReportViewModel;
+import ikzm_jhm_viewmodel.PostViewModel;
 import ikzm_jhm_viewmodel.SearchResultViewModel;
 
 /**
@@ -60,7 +60,7 @@ public class ModelConverter {
 		return new SearchResultViewModel(summaries);
 	}
 
-	public static PostReportViewModel toPostReportViewModel(
+	public static PostViewModel toPostReportViewModel(
 			Post post,
 			PostDetail detail,
 			String departmentName,
@@ -68,7 +68,7 @@ public class ModelConverter {
 			String posterName,
 			Map<Integer, String> examCategoryMap,
 			Map<Integer, String> examNameMap) {
-		List<PostReportViewModel.SelectedExamItem> examItems = new ArrayList<>();
+		List<PostViewModel.SelectedExamItem> examItems = new ArrayList<>();
 
 		if (post.getExamSelection() != null) {
 			for (PostExamSelection sel : post.getExamSelection()) {
@@ -76,7 +76,7 @@ public class ModelConverter {
 				String category = examCategoryMap.getOrDefault(contentId, "その他");
 				String name = examNameMap.getOrDefault(contentId, "未定義項目");
 
-				examItems.add(new PostReportViewModel.SelectedExamItem(
+				examItems.add(new PostViewModel.SelectedExamItem(
 						category,
 						name,
 						sel.getDetailText()));
@@ -90,7 +90,7 @@ public class ModelConverter {
 		int totalApplicants = (detail != null) ? detail.getTotalApplicants() : 0;
 		String adviceText = (detail != null) ? detail.getAdviceText() : "";
 
-		return new PostReportViewModel(
+		return new PostViewModel(
 				post.getPostId(),
 				post.getCompanyName(),
 				post.getExamDate(),
