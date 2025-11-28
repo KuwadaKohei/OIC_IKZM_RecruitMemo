@@ -7,7 +7,7 @@ import java.util.List;
  * 就活報告書の詳細画面表示に特化したビューモデル。
  * Posts, Departments, SubmissionMethods, PostDetails, PostExamSelectionsの情報を集約する。
  */
-public class PostReportViewModel {
+public class PostViewModel {
 
 	//Postsコア情報と関連情報 (Posts, Departments, SubmissionMethods)
 	private int postId;
@@ -27,7 +27,7 @@ public class PostReportViewModel {
 	//試験内容の選択結果 (ExamContent, PostExamSelections)
 	private List<SelectedExamItem> selectedExams;// 選択された試験項目のリスト。JSP側でループさせて表示する。
 
-	public PostReportViewModel(int postId, String companyName, LocalDate examDate, String venueAddress,
+	public PostViewModel(int postId, String companyName, LocalDate examDate, String venueAddress,
 			String departmentName, String submissionMethodName, int recruitmentNo,
 			int grade, String posterName, LocalDate resultDate, int scheduledHires,
 			int totalApplicants, String adviceText, List<SelectedExamItem> selectedExams) {
