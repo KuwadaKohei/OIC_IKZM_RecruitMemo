@@ -44,7 +44,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE userId = ? AND recruitmentNo = ?";
+				String sql = "SELECT * FROM Post WHERE userId = ? AND recruitmentNo = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , userId);
 				pstmt.setInt(2 , substring);
@@ -131,7 +131,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE userId = ? AND examDate = ?";
+				String sql = "SELECT * FROM Post WHERE userId = ? AND examDate = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , userId);
 				pstmt.setDate(2 , date_sql);
@@ -220,7 +220,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE isActive = true AND examDate >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR) ORDER BY postId DESC";
+				String sql = "SELECT * FROM Post WHERE isActive = true AND examDate >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR) ORDER BY postId DESC AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				rs = pstmt.executeQuery();
 				while(rs.next() == true) {
@@ -304,7 +304,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE postId = ?";
+				String sql = "SELECT * FROM Post WHERE postId = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , target);
 				rs = pstmt.executeQuery();
@@ -382,7 +382,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE userId = ?";
+				String sql = "SELECT * FROM Post WHERE userId = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , userId);
 				rs = pstmt.executeQuery();
@@ -470,7 +470,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE examDate = ?";
+				String sql = "SELECT * FROM Post WHERE examDate = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setDate(1 , date_sql);
 				rs = pstmt.executeQuery();
@@ -551,7 +551,7 @@ public class PostDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM Post WHERE recruitmentNo = ?";
+				String sql = "SELECT * FROM Post WHERE recruitmentNo = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , substring);
 				rs = pstmt.executeQuery();
