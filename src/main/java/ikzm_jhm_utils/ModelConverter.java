@@ -60,7 +60,7 @@ public class ModelConverter {
 		return new SearchResultViewModel(summaries);
 	}
 
-	public static PostViewModel toPostReportViewModel(
+	public static PostViewModel toPostViewModel(
 			Post post,
 			PostDetail detail,
 			String departmentName,
