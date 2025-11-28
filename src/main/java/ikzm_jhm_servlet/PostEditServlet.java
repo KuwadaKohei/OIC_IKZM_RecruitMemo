@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * doPostのみ
  * Action=Editでフォームの表示、Action=EditConfirmで情報の登録を行う
  */
-@WebServlet("/PostEdit")
+@WebServlet("/ReportEdit")
 public class PostEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 

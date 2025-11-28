@@ -10,7 +10,7 @@ import java.util.Map;
  * View(JSP)とController/Action間のデータの橋渡しを行う。
  * 編集画面での「初期値入力」にも使用される。
  */
-public class ReportForm {
+public class PostForm {
 
 	// 編集時のみ使用 (新規時は0またはnull)
 	private int postId;
@@ -39,7 +39,7 @@ public class ReportForm {
 	// 例: key=専門試験ID, value="Javaプログラミング"
 	private Map<Integer, String> examDetails = new HashMap<>();
 
-	public ReportForm() {
+	public PostForm() {
 	}
 
 	// ゲッター・セッター群

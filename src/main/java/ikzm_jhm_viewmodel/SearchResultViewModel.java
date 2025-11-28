@@ -4,117 +4,76 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-/*
- * クラス説明
- * 投稿検索機能の結果の一覧表示に特化したビューモデル
- * 詳細情報などを除く概要情報のみを格納する
+/**
+ * 検索結果一覧画面全体のビューモデル。
+ * 複数の結果アイテム（Summary）と、ページング情報などを保持します。
  */
 public class SearchResultViewModel {
-	private int postId; //ポストID
-	private int userId; //投稿者ID
-	private int departmentId; //学科ID
-	private int methodId; //応募方法ID
-	private int recruitmentNo; //求人番号ID
-	private String companyName; //事業所名
-	private LocalDate examDate; //受験日
-	private String adviceTest; //受験のアドバイス
-	private List<Integer> selectedExamIds; //チェックが入った試験項目IDのリスト
-	private Map<Integer, String> detailTexts; //contentIdをキーとする、詳細記述（作文テーマ、専門など）のマップ
 
-	public SearchResultViewModel(int postId, int userId, int departmentId, int methodId, int recruitmentNo,
-			String companyName, LocalDate examDate, String adviceTest, List<Integer> selectedExamIds,
-			Map<Integer, String> detailTexts) {
-		super();
-		this.postId = postId;
-		this.userId = userId;
-		this.departmentId = departmentId;
-		this.methodId = methodId;
-		this.recruitmentNo = recruitmentNo;
-		this.companyName = companyName;
-		this.examDate = examDate;
-		this.adviceTest = adviceTest;
-		this.selectedExamIds = selectedExamIds;
-		this.detailTexts = detailTexts;
+	// 検索結果のリスト
+	private List<Summary> reports;
+
+	// 必要に応じてページング情報などをここに追加
+	// private int totalCount;
+	// private int currentPage;
+
+	public SearchResultViewModel(List<Summary> reports) {
+		this.reports = reports;
 	}
 
-	public int getPostId() {
-		return postId;
+	public List<Summary> getReports() {
+		return reports;
 	}
 
-	public void setPostId(int postId) {
-		this.postId = postId;
-	}
+	//1件分の概要情報を保持する内部クラス
 
-	public int getUserId() {
-		return userId;
-	}
+	public static class Summary {
+		private int postId;
+		private int userId;
+		private int departmentId;
+		private int methodId;
+		private int recruitmentNo;
+		private String companyName;
+		private LocalDate examDate;
+		private List<Integer> selectedExamIds;
+		private Map<Integer, String> detailTexts;
 
-	public void setUserId(int userId) {
-		this.userId = userId;
-	}
+		
 
-	public int getDepartmentId() {
-		return departmentId;
-	}
+		public Summary(int postId, int userId, int departmentId, int methodId, int recruitmentNo, String companyName,
+				LocalDate examDate, List<Integer> selectedExamIds, Map<Integer, String> detailTexts) {
+			super();
+			this.postId = postId;
+			this.userId = userId;
+			this.departmentId = departmentId;
+			this.methodId = methodId;
+			this.recruitmentNo = recruitmentNo;
+			this.companyName = companyName;
+			this.examDate = examDate;
+			this.selectedExamIds = selectedExamIds;
+			this.detailTexts = detailTexts;
+		}
 
-	public void setDepartmentId(int departmentId) {
-		this.departmentId = departmentId;
-	}
+		// --- Getters ---
+		public int getPostId() {
+			return postId;
+		}
 
-	public int getMethodId() {
-		return methodId;
-	}
+		public String getCompanyName() {
+			return companyName;
+		}
 
-	public void setMethodId(int methodId) {
-		this.methodId = methodId;
-	}
+		public LocalDate getExamDate() {
+			return examDate;
+		}
 
-	public int getRecruitmentNo() {
-		return recruitmentNo;
-	}
+		public List<Integer> getSelectedExamIds() {
+			return selectedExamIds;
+		}
 
-	public void setRecruitmentNo(int recruitmentNo) {
-		this.recruitmentNo = recruitmentNo;
+		public Map<Integer, String> getDetailTexts() {
+			return detailTexts;
+		}
+		// ... その他のGetterも必要に応じて追加 ...
 	}
-
-	public String getCompanyName() {
-		return companyName;
-	}
-
-	public void setCompanyName(String companyName) {
-		this.companyName = companyName;
-	}
-
-	public LocalDate getExamDate() {
-		return examDate;
-	}
-
-	public void setExamDate(LocalDate examDate) {
-		this.examDate = examDate;
-	}
-
-	public String getAdviceTest() {
-		return adviceTest;
-	}
-
-	public void setAdviceTest(String adviceTest) {
-		this.adviceTest = adviceTest;
-	}
-
-	public List<Integer> getSelectedExamIds() {
-		return selectedExamIds;
-	}
-
-	public void setSelectedExamIds(List<Integer> selectedExamIds) {
-		this.selectedExamIds = selectedExamIds;
-	}
-
-	public Map<Integer, String> getDetailTexts() {
-		return detailTexts;
-	}
-
-	public void setDetailTexts(Map<Integer, String> detailTexts) {
-		this.detailTexts = detailTexts;
-	}
-
 }

@@ -1,16 +1,23 @@
 package ikzm_jhm_dto;
 
 public class PostExamSelection {
+	private int postId;
 	private int contentId;
 	private String detailText;
 
-	public PostExamSelection(int contentId, String detailText) {
+	public PostExamSelection(int postId, int contentId, String detailText) {
 		super();
+		this.postId = postId;
 		this.contentId = contentId;
 		this.detailText = detailText;
 	}
 
-	public PostExamSelection() {
+	public int getPostId() {
+		return postId;
+	}
+
+	public void setPostId(int postId) {
+		this.postId = postId;
 	}
 
 	public int getContentId() {
