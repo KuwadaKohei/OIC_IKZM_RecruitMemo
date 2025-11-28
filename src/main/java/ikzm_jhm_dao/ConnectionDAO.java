@@ -18,7 +18,7 @@ public class ConnectionDAO {
 			throw new IllegalStateException("DB-2001");
 		}
 		try {
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IKZMPortalSite","Jun0224","Jun123");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/IKZMRecruitMemo","Jun0224","Jun123");
 		}catch(SQLException e) {
 			//DB接続エラー番号(未規定)
 			throw new Exception("DB-2001");
