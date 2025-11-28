@@ -30,7 +30,7 @@ public class UserDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM USER WHERE USERID = ?";
+				String sql = "SELECT * FROM User WHERE UserId = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , searchWordInt);
 				rs = pstmt.executeQuery();
@@ -80,7 +80,7 @@ public class UserDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM USER WHERE GOOGLEACCOUNTID = ?";
+				String sql = "SELECT * FROM User WHERE googleAccountId = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1 , targetAccountId);
 				rs = pstmt.executeQuery();
@@ -129,7 +129,7 @@ public class UserDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM USER WHERE EMAIL = ?";
+				String sql = "SELECT * FROM User WHERE email = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1 , email);
 				rs = pstmt.executeQuery();
@@ -175,7 +175,7 @@ public class UserDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT * FROM USER WHERE EMAIL = ?";
+				String sql = "SELECT * FROM User WHERE name = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setString(1 , name);
 				rs = pstmt.executeQuery();
@@ -245,9 +245,39 @@ public class UserDAO {
 	}
 
 	//引数のユーザーIDのレコードに学科が登録されているか確認する
-	public boolean hasDepartment(int userId) {
-		return false;
-
+	public boolean hasDepartment(int userId) throws Exception{
+		Connection con = ConnectionDAO.createConnection();
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String userType = null;
+		
+		boolean result = false;
+		
+		try {
+			if(con != null) {
+				String sql = "SELECT userType FROM User WHERE userId = ? AND isActive = true";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setInt(1 , userId);
+				rs = pstmt.executeQuery();
+				while(rs.next() == true) {
+					userType = rs.getString("userType");
+					
+					if("".equals(userType) || userType == null) {
+						result = false;
+					}else {
+						result =  true;
+					}
+				}
+			}
+			rs.close();
+			pstmt.close();
+			return result;
+		}catch(SQLException e) {
+			//情報取得に失敗(未規定)
+			throw new Exception("DB-2003");
+		}finally {
+			ConnectionDAO.closeConnection(con);
+		}
 	}
-
 }
