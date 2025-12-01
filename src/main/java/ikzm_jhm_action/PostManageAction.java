@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import ikzm_jhm_dao.PostDAO;
+import ikzm_jhm_dao.PostDetailDAO;
+import ikzm_jhm_dao.PostExamSelectionDAO;
 import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostDetail;
 import ikzm_jhm_dto.PostExamSelection;
@@ -60,9 +62,40 @@ public class PostManageAction {
 
 	}
 
-	//投稿編集処理（旧データ削除・新規挿入含むトランザクション)
-	public void updatePost(PostForm form) {
+	public PostForm getPostFormForEdit(int postId, int userId) {
 
+		PostDAO postDao = new PostDAO();
+
+		Post post = postDao.searchPostById(postId);
+
+		if (post == null || post.getUserId() != userId) {
+			//データがない、または他人なら弾く
+			return null;
+		}
+
+		//関連データを収集する
+		PostDetailDAO detailDao = new PostDetailDAO();
+		PostDetail detail = detailDao.findByPostId(postId);
+
+		return ModelConverter.toPostForm(post, detail);
+	}
+
+	//投稿編集処理（旧データ削除・新規挿入含むトランザクション)
+	public boolean updatePost(PostForm form, int postId) {
+		
+		//DAOインスタンスを生成
+		PostDAO postDao = new PostDAO();
+		PostDetailDAO detailDao = new PostDetailDAO();
+		PostExamSelectionDAO selectionDao = new PostExamSelectionDAO();
+		
+		try {
+			int postId = form.getPostId();
+			
+			
+		}catch(Exception e) {
+			
+			
+		}
 	}
 
 	//投稿レコードを削除（トランザクション管理）
