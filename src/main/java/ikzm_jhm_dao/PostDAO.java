@@ -179,8 +179,6 @@ public class PostDAO {
 		}finally {
 			ConnectionDAO.closeConnection(con);
 		}	
->>>>>>> branch 'master' of https://github.com/KuwadaKohei/OIC_IKZM_RecruitMemo.git
-	}
 
 	//メモを削除する(疑似的に)
 	public void deletePost(int postId) throws Exception {
@@ -390,7 +388,7 @@ public class PostDAO {
 		return null;
 	}
 
-	public List<Post> searchPostByRecruitmentNo(String substring) {
+	public List<Post> searchPostByRecruitmentNo(int termInt) {
 		// TODO 自動生成されたメソッド・スタブ
 		return null;
 	}
