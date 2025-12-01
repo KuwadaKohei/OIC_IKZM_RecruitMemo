@@ -25,6 +25,8 @@ public class UserDAO {
 		String email = null;
 		String userType = null;
 		String name = null;
+		int departmentId = 0;
+		int grade = 0;
 		boolean isActive = false;
 		boolean isAdmin = false;
 		
@@ -39,6 +41,8 @@ public class UserDAO {
 					email = rs.getString("email");
 					userType = rs.getString("userType");
 					name = rs.getString("name");
+					departmentId = rs.getInt("departmentId");
+					grade = rs.getInt("grade");
 					isActive = rs.getBoolean("isActive");
 					isAdmin = rs.getBoolean("isAdmin");
 				}
@@ -49,6 +53,8 @@ public class UserDAO {
 				user.setEmail(email);
 				user.setUserType(userType);
 				user.setName(name);
+				user.setDepartmentId(departmentId);
+				user.setGrade(grade);
 				user.setActive(isActive);
 				user.setAdmin(isAdmin);
 			}
@@ -75,6 +81,8 @@ public class UserDAO {
 		String email = null;
 		String userType = null;
 		String name = null;
+		int departmentId = 0;
+		int grade = 0;
 		boolean isActive = false;
 		boolean isAdmin = false;
 		
@@ -89,6 +97,8 @@ public class UserDAO {
 					email = rs.getString("email");
 					userType = rs.getString("userType");
 					name = rs.getString("name");
+					departmentId = rs.getInt("departmentId");
+					grade = rs.getInt("grade");
 					isActive = rs.getBoolean("isActive");
 					isAdmin = rs.getBoolean("isAdmin");
 				}
@@ -99,6 +109,8 @@ public class UserDAO {
 				user.setEmail(email);
 				user.setUserType(userType);
 				user.setName(name);
+				user.setDepartmentId(departmentId);
+				user.setGrade(grade);
 				user.setActive(isActive);
 				user.setAdmin(isAdmin);
 			}
@@ -124,6 +136,8 @@ public class UserDAO {
 		String googleAccountId = null;
 		String userType = null;
 		String name = null;
+		int departmentId = 0;
+		int grade = 0;
 		boolean isActive = false;
 		boolean isAdmin = false;
 		
@@ -138,11 +152,13 @@ public class UserDAO {
 					googleAccountId = rs.getString("googleAccountId");
 					userType = rs.getString("userType");
 					name = rs.getString("name");
+					departmentId = rs.getInt("departmentId");
+					grade = rs.getInt("grade");
 					isActive = rs.getBoolean("isActive");
 					isAdmin = rs.getBoolean("isAdmin");
 					
 					//Userインスタンスを生成
-					User user = new User(userId , googleAccountId , email , userType , name , isActive , isAdmin);
+					User user = new User(userId , googleAccountId , email , userType , name , departmentId , grade , isActive , isAdmin);
 					
 					//listに格納
 					list.add(user);
@@ -170,6 +186,8 @@ public class UserDAO {
 		String googleAccountId = null;
 		String email = null;
 		String userType = null;
+		int departmentId = 0;
+		int grade = 0;
 		boolean isActive = false;
 		boolean isAdmin = false;
 		
@@ -184,11 +202,13 @@ public class UserDAO {
 					googleAccountId = rs.getString("googleAccountId");
 					email = rs.getString("email");
 					userType = rs.getString("userType");
+					departmentId = rs.getInt("departmentId");
+					grade = rs.getInt("grade");
 					isActive = rs.getBoolean("isActive");
 					isAdmin = rs.getBoolean("isAdmin");
 					
 					//Userインスタンスを生成
-					User user = new User(userId , googleAccountId , email , userType , name , isActive , isAdmin);
+					User user = new User(userId , googleAccountId , email , userType , name , departmentId , grade , isActive , isAdmin);
 					
 					//listに格納
 					list.add(user);
@@ -206,7 +226,7 @@ public class UserDAO {
 	}
 
 	//新規ログインユーザーを登録し、ユーザーIDを返す
-	public int insertGoogleUser(String accountId, String email, String userType, String name, boolean isActive, boolean isAdmin) throws Exception{
+	public int insertGoogleUser(String accountId, String email, String userType, String name, int departmentId , int grade , boolean isActive, boolean isAdmin) throws Exception{
 		Connection con = ConnectionDAO.createConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -215,14 +235,16 @@ public class UserDAO {
 		
 		try {
 			if(con != null) {
-				String sql = "INSERT INTO USER(accountId , email , userType , name , isActive , isAdmin) VALUES(?,?,?,?,?,?)";
+				String sql = "INSERT INTO USER(accountId , email , userType , name , departmentId , grade , isActive , isAdmin) VALUES(?,?,?,?,?,?,?,?)";
 				pstmt = con.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
 				pstmt.setString(1 , accountId);
 				pstmt.setString(2 , email);
 				pstmt.setString(3 , userType);
 				pstmt.setString(4 , name);
-				pstmt.setBoolean(5 , isActive);
-				pstmt.setBoolean(6 , isAdmin);
+				pstmt.setInt(5, departmentId);
+				pstmt.setInt(6, grade);
+				pstmt.setBoolean(7 , isActive);
+				pstmt.setBoolean(8 , isAdmin);
 				
 				pstmt.executeUpdate();
 				
@@ -250,20 +272,20 @@ public class UserDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		
-		String userType = null;
+		int departmentId = 0;
 		
 		boolean result = false;
 		
 		try {
 			if(con != null) {
-				String sql = "SELECT userType FROM User WHERE userId = ? AND isActive = true";
+				String sql = "SELECT departmentId FROM User WHERE userId = ? AND isActive = true";
 				pstmt = con.prepareStatement(sql);
 				pstmt.setInt(1 , userId);
 				rs = pstmt.executeQuery();
 				while(rs.next() == true) {
-					userType = rs.getString("userType");
+					departmentId = rs.getInt("departmentId");
 					
-					if("".equals(userType) || userType == null) {
+					if(departmentId == 0) {
 						result = false;
 					}else {
 						result =  true;

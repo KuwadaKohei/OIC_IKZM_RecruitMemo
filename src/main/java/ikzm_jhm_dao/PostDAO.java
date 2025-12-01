@@ -21,7 +21,7 @@ import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostExamSelection;
 
 public class PostDAO {
-	/**********************↓自分メモのメソッド↓**********************/
+	/**********************↓自分メモのメソッド↓**********************/	
 	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
 	public List<Post> searchPostByRecruitmentNo(int userId, int substring) throws Exception {
 		Connection con = ConnectionDAO.createConnection();

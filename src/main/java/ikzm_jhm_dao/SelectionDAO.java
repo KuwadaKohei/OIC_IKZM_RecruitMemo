@@ -1,4 +1,4 @@
-package ikzm_jhm_action;
+package ikzm_jhm_dao;
 
 import java.util.List;
 

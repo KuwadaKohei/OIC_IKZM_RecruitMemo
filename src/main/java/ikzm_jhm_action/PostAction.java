@@ -2,12 +2,25 @@ package ikzm_jhm_action;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import ikzm_jhm_dao.DepartmentDAO;
+import ikzm_jhm_dao.ExamContentDAO;
 import ikzm_jhm_dao.PostDAO;
+import ikzm_jhm_dao.PostDetailDAO;
+import ikzm_jhm_dao.PostExamSelectionDAO;
+import ikzm_jhm_dao.SubmissionMethodDAO;
+import ikzm_jhm_dao.UserDAO;
+import ikzm_jhm_dto.Department;
+import ikzm_jhm_dto.ExamContent;
 import ikzm_jhm_dto.Post;
+import ikzm_jhm_dto.PostDetail;
+import ikzm_jhm_dto.SubmissionMethod;
+import ikzm_jhm_dto.User;
 import ikzm_jhm_utils.ModelConverter;
-import ikzm_jhm_viewmodel.PostReportViewModel;
+import ikzm_jhm_viewmodel.PostViewModel;
 import ikzm_jhm_viewmodel.SearchResultViewModel;
 
 public class PostAction {
@@ -38,30 +51,79 @@ public class PostAction {
 			// #求人番号検索
 			posts = dao.searchPostByRecruitmentNo(term.substring(1));
 
-		} else if(term.startsWith("@")){
+		} else if (term.startsWith("@")) {
 			//日付検索
 			try {
 				String dateStr = term.substring(1);
 				LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 				posts = dao.searchPostByExamDate(date);
-			}catch(Exception e) {
-				
+			} catch (Exception e) {
+
 			}
-			
-		}else {
+
+		} else {
 			//通常検索
 			posts = dao.searchPostByKeyword(term);
-			
+
 		}
-		
+
 		return ModelConverter.toSearchResultViewModel(posts);
 	}
 
 	//投稿の詳細データ取得、ViewModel変換、匿名性処理
-	public PostReportViewModel getPostDetails(int postId) {
+	public PostViewModel getPostDetails(int postId) {
+
+		PostDAO postDao = new PostDAO();
+		PostDetailDAO detailDao = new PostDetailDAO();
+		PostExamSelectionDAO selectionDao = new PostExamSelectionDAO();
+		UserDAO userDao = new UserDAO();
+		DepartmentDAO deptDao = new DepartmentDAO();
+		SubmissionMethodDAO methodDao = new SubmissionMethodDAO();
+		ExamContentDAO examContentDao = new ExamContentDAO();
+
+		Post post = postDao.searchPostById(postId);
+
+		if (post == null) {
+			return null;
+		}
+
+		//詳細情報を取得
+		PostDetail detail = detailDao.findByPostId(postId);
+
+		//投稿情報に基づく
+		post.setExamSelection(selectionDao.findByPostId(postId));
+
+		String posterName = "匿名";
+		if (!post.isAnonymous()) {
+			User user = userDao.findById(post.getUserId());
+			if (user != null) {
+				posterName = user.getName();
+			}
+		}
+
+		//学科名を取得
+		Department dept = deptDao.findById(post.getDepartmentId());
+		String deptName = (dept != null) ? dept.getDepartmentName() : "不明";
+
+		//応募方法名を取得
+		SubmissionMethod method = methodDao.findById(post.getMethodId());
+		String methodName = (method != null) ? method.getMethodName() : "不明";
+
+		Map<Integer, String> examCategoryMap = new HashMap<>();
+		Map<Integer, String> examNameMap = new HashMap<>();
+
+		List<ExamContent> allContents = examContentDao.findAll();
+		if (allContents != null) {
+			for (ExamContent c : allContents) {
+				examCategoryMap.put(c.getContentId(), c.getContentCategory());
+				examNameMap.put(c.getContentId(), c.getContentName());
+			}
+		}
+
+		return ModelConverter.toPostViewModel(post,detail,deptName,methodName,posterName,examCategoryMap,examNameMap);
 	}
 
-	public List<PostReportViewModel> getMyPostList(int userId) {
+	public List<PostViewModel> getMyPostList(int userId) {
 
 	}
 
