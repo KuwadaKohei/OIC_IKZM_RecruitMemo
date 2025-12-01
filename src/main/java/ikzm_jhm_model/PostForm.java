@@ -1,5 +1,8 @@
 package ikzm_jhm_model;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,5 +164,56 @@ public class PostForm {
 
 	public void setExamDetails(Map<Integer, String> examDetails) {
 		this.examDetails = examDetails;
+	}
+
+	/**
+	 * 入力内容のバリデーションを行う。
+	 * @return エラーメッセージのリスト (エラーがない場合は空のリスト)
+	 */
+	public List<String> validate() {
+		List<String> errors = new ArrayList<>();
+
+		//会社名
+		if (companyName == null || companyName.isBlank()) {
+			errors.add("事業所名は必須です。");
+		} else if (companyName.length() > 100) {//DBの定義に合わせて修正予定
+			errors.add("事業所名は100文字以内で入力してください。");
+		}
+
+		//受験日
+		if (examDateStr == null || examDateStr.isBlank()) {
+			errors.add("受験日は必須です。");
+		} else {
+			try {
+				LocalDate.parse(examDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			} catch (DateTimeParseException e) {
+				errors.add("受験日の形式が正しくありません。");
+			}
+		}
+
+		//求人票番号
+		if (recruitmentNoStr != null && !recruitmentNoStr.isBlank()) {
+			if (!recruitmentNoStr.matches("\\d+")) {
+				errors.add("求人票番号は半角数字で入力してください。");
+			}
+		}
+
+		//マスタ選択系
+		if (departmentId <= 0) {
+			errors.add("学科を選択してください。");
+		}
+		if (methodId <= 0) {
+			errors.add("応募方法を選択してください。");
+		}
+		if (grade <= 0) {
+			errors.add("学年を選択してください。");
+		}
+
+		//試験内容
+		if (selectedExamIds == null || selectedExamIds.isEmpty()) {
+			errors.add("試験内容を少なくとも1つ選択してください。");
+		}
+
+		return errors;
 	}
 }
