@@ -35,7 +35,7 @@ public class PostAction {
 	}
 
 	//ユーザーから受け取った検索情報をもとに必要なDAOを呼び出す
-	public SearchResultViewModel searchPosts(String searchWord) {
+	public SearchResultViewModel searchPosts(int searchWord) {
 		PostDAO dao = new PostDAO();
 		List<Post> posts = null;
 
