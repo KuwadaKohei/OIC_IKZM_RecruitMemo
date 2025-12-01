@@ -6,16 +6,21 @@ public class User {
 	private String email;
 	private String userType;
 	private String name;
+	private int departmentId;
+	private int grade;
 	private boolean isActive;
 	private boolean isAdmin;
 
-	public User(int userId, String googleAccountId, String email, String userType, String name, boolean isActive,boolean isAdmin) {
+	public User(int userId, String googleAccountId, String email, String userType, String name, int departmentId,
+			int grade, boolean isActive, boolean isAdmin) {
 		super();
 		this.userId = userId;
 		this.googleAccountId = googleAccountId;
 		this.email = email;
 		this.userType = userType;
 		this.name = name;
+		this.departmentId = departmentId;
+		this.grade = grade;
 		this.isActive = isActive;
 		this.isAdmin = isAdmin;
 	}
@@ -63,6 +68,22 @@ public class User {
 		this.name = name;
 	}
 
+	public int getDepartmentId() {
+		return departmentId;
+	}
+
+	public void setDepartmentId(int departmentId) {
+		this.departmentId = departmentId;
+	}
+
+	public int getGrade() {
+		return grade;
+	}
+
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
+
 	public boolean isActive() {
 		return isActive;
 	}
@@ -78,4 +99,5 @@ public class User {
 	public void setAdmin(boolean isAdmin) {
 		this.isAdmin = isAdmin;
 	}
+
 }
