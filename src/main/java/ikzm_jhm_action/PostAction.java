@@ -19,6 +19,7 @@ import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostDetail;
 import ikzm_jhm_dto.SubmissionMethod;
 import ikzm_jhm_dto.User;
+import ikzm_jhm_model.PostForm;
 import ikzm_jhm_utils.ModelConverter;
 import ikzm_jhm_viewmodel.PostViewModel;
 import ikzm_jhm_viewmodel.SearchResultViewModel;
@@ -32,6 +33,24 @@ public class PostAction {
 
 		List<Post> posts = dao.findAll();
 		return ModelConverter.toSearchResultViewModel(posts);
+	}
+	
+	public PostForm getPostFormForEdit(int postId, int userId) {
+
+		PostDAO postDao = new PostDAO();
+
+		Post post = postDao.searchPostById(postId);
+
+		if (post == null || post.getUserId() != userId) {
+			//データがない、または他人なら弾く
+			return null;
+		}
+
+		//関連データを収集する
+		PostDetailDAO detailDao = new PostDetailDAO();
+		PostDetail detail = detailDao.findByPostId(postId);
+
+		return ModelConverter.toPostForm(post, detail);
 	}
 
 	//ユーザーから受け取った検索情報をもとに必要なDAOを呼び出す
@@ -119,10 +138,6 @@ public class PostAction {
 
 		return ModelConverter.toPostViewModel(post, detail, deptName, methodName, posterName, examCategoryMap,
 				examNameMap);
-	}
-
-	public List<PostViewModel> getMyPostList(int userId) {
-
 	}
 
 	//特定のユーザーの投稿を全て取得

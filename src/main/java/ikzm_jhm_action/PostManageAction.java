@@ -49,7 +49,7 @@ public class PostManageAction {
 					sel.setPostId(newPostId);
 				}
 
-				SelectionDAO selectionDao = new SelectionDAO();
+				PostExamSelectionDAO selectionDao = new PostExamSelectionDAO();
 				selectionDao.insertList(selections);
 			}
 
@@ -62,37 +62,42 @@ public class PostManageAction {
 
 	}
 
-	public PostForm getPostFormForEdit(int postId, int userId) {
-
-		PostDAO postDao = new PostDAO();
-
-		Post post = postDao.searchPostById(postId);
-
-		if (post == null || post.getUserId() != userId) {
-			//データがない、または他人なら弾く
-			return null;
-		}
-
-		//関連データを収集する
-		PostDetailDAO detailDao = new PostDetailDAO();
-		PostDetail detail = detailDao.findByPostId(postId);
-
-		return ModelConverter.toPostForm(post, detail);
-	}
-
 	//投稿編集処理（旧データ削除・新規挿入含むトランザクション)
-	public boolean updatePost(PostForm form, int postId) {
-		
+	public boolean updatePost(PostForm form, int userId) {
+
 		//DAOインスタンスを生成
 		PostDAO postDao = new PostDAO();
 		PostDetailDAO detailDao = new PostDetailDAO();
 		PostExamSelectionDAO selectionDao = new PostExamSelectionDAO();
-		
-		try {
-			int postId = form.getPostId();
-			
-			
+
+		int postId = form.getPostId();
+
+		//該当する投稿が存在するか確認
+		Post existing = postDao.searchPostById(postId);
+		if (existing == null || existing.getUserId() != userId) {
+			return false;
 		}
+
+		//Postテーブルの更新
+		Post post = ModelConverter.toPostDto(form, userId);
+		post.setUpdatedAt(LocalDateTime.now());
+		postDao.update(post);
+
+		//Detailテーブルの更新
+		PostDetail detail = ModelConverter.toPostDetailDto(form);
+		detailDao.update(detail);
+
+		//ExamSelectionのレコードは一度削除して追加する
+		selectionDao.deleteByPostId(postId);
+
+		List<PostExamSelection> selections = ModelConverter.toSelectionList(form);
+		if (selections != null) {
+			for (PostExamSelection sel : selections) {
+				sel.setPostId(postId);
+			}
+		}
+		
+		return true;
 	}
 
 	//投稿レコードを削除（トランザクション管理）

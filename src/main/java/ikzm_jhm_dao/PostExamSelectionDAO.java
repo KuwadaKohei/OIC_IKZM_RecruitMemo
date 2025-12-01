@@ -11,4 +11,9 @@ public class PostExamSelectionDAO {
 		return null;
 	}
 
+	public void deleteByPostId(int postId) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
 }

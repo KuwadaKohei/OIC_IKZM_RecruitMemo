@@ -9,4 +9,9 @@ public class PostDetailDAO {
 		return null;
 	}
 
+	public void update(PostDetail detail) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
 }

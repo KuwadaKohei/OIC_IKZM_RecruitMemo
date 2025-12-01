@@ -3,7 +3,6 @@
 /***************************/
 package ikzm_jhm_dao;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,9 +24,9 @@ public class PostDAO {
 		Connection con = ConnectionDAO.createConnection();
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		
+
 		Post post = new Post();
-		
+
 		int userId = 0;
 		int departmentId = 0;
 		int methodId = 0;
@@ -41,14 +40,14 @@ public class PostDAO {
 		LocalDateTime updatedAt = null;
 		List<PostExamSelection> examSelection = null;
 		boolean isActive = false;
-		
+
 		try {
-			if(con != null) {
+			if (con != null) {
 				String sql = "SELECT * FROM POST WHERE POSTID = ?";
 				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1 , target);
+				pstmt.setInt(1, target);
 				rs = pstmt.executeQuery();
-				while(rs.next() == true) {
+				while (rs.next() == true) {
 					userId = rs.getInt("userId");
 					departmentId = rs.getInt("departmentId");
 					methodId = rs.getInt("methodId");
@@ -62,15 +61,15 @@ public class PostDAO {
 					Date date_u = rs.getDate("updatedAt");
 					//List型のexamSelectionの処理//
 					isActive = rs.getBoolean("isActive");
-					
+
 					//localDate型に変換
-					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
-					
+					examDate = LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
+
 					//localDateTime型に変換
-					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
+					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
+					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
 				}
-				
+
 				//Postの中身を格納
 				post.setPostId(target);
 				post.setUserId(userId);
@@ -90,14 +89,14 @@ public class PostDAO {
 			rs.close();
 			pstmt.close();
 			return post;
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			//情報取得に失敗(未規定)
 			throw new Exception("DB-2003");
-		}finally {
+		} finally {
 			ConnectionDAO.closeConnection(con);
 		}
 	}
-	
+
 	//userIdをキーにしてメモ検索
 	public ArrayList<Post> searchPostListByUserId(int userId) throws Exception {
 		Connection con = ConnectionDAO.createConnection();
@@ -178,26 +177,26 @@ public class PostDAO {
 			throw new Exception("DB-2003");
 		}finally {
 			ConnectionDAO.closeConnection(con);
-		}	
+		}
 
 	//メモを削除する(疑似的に)
 	public void deletePost(int postId) throws Exception {
 		Connection con = ConnectionDAO.createConnection();
 		PreparedStatement pstmt = null;
-		
+
 		try {
-			if(con != null) {
+			if (con != null) {
 				String sql = "UPDATE POST SET ISACTIVE = false WHERE POSTID = ?";
 				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1 , postId);
+				pstmt.setInt(1, postId);
 				pstmt.executeUpdate();
 			}
 			pstmt.close();
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			//情報削除に失敗(未規定)
 			throw new Exception("DB-2003");
-			
-		}finally {
+
+		} finally {
 			ConnectionDAO.closeConnection(con);
 		}
 	}
@@ -208,7 +207,7 @@ public class PostDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		ArrayList<Post> list = new ArrayList<>();
-		
+
 		int postId = 0;
 		int departmentId = 0;
 		int methodId = 0;
@@ -221,15 +220,15 @@ public class PostDAO {
 		LocalDateTime updatedAt = null;
 		List<PostExamSelection> examSelection = null;
 		boolean isActive = false;
-		
+
 		try {
-			if(con != null) {
+			if (con != null) {
 				String sql = "SELECT * FROM POST WHERE USERID = ? AND RECURUITMENTNO = ?";
 				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1 , userId);
-				pstmt.setString(2 , substring);
+				pstmt.setInt(1, userId);
+				pstmt.setString(2, substring);
 				rs = pstmt.executeQuery();
-				while(rs.next() == true) {
+				while (rs.next() == true) {
 					postId = rs.getInt("postId");
 					departmentId = rs.getInt("departmentId");
 					methodId = rs.getInt("methodId");
@@ -242,14 +241,14 @@ public class PostDAO {
 					Date date_u = rs.getDate("updatedAt");
 					//List型のexamSelectionの処理//
 					isActive = rs.getBoolean("isActive");
-					
+
 					//localDate型に変換
-					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
-					
+					examDate = LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
+
 					//localDateTime型に変換
-					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-					
+					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
+					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
+
 					//Postインスタンスを生成
 					Post post = new Post(
 							postId,
@@ -265,21 +264,20 @@ public class PostDAO {
 							createAt,
 							updatedAt,
 							examSelection,
-							isActive
-					);
-					
+							isActive);
+
 					//listに格納
 					list.add(post);
-					
+
 				}
 			}
 			rs.close();
 			pstmt.close();
 			return list;
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			//情報取得に失敗(未規定)
 			throw new Exception("DB-2003");
-		}finally {
+		} finally {
 			ConnectionDAO.closeConnection(con);
 		}
 	}
@@ -290,12 +288,12 @@ public class PostDAO {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		ArrayList<Post> list = new ArrayList<>();
-		
+
 		//LocalDate→String→java.sql.Dateに変換
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		String date = simpleDateFormat.format(examDate.toString());
 		java.sql.Date date_sql = java.sql.Date.valueOf(date);
-		
+
 		int postId = 0;
 		int departmentId = 0;
 		int methodId = 0;
@@ -308,15 +306,15 @@ public class PostDAO {
 		LocalDateTime updatedAt = null;
 		List<PostExamSelection> examSelection = null;
 		boolean isActive = false;
-		
+
 		try {
-			if(con != null) {
+			if (con != null) {
 				String sql = "SELECT * FROM POST WHERE USERID = ? AND RECURUITMENTNO = ?";
 				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1 , userId);
-				pstmt.setDate(2 , date_sql);
+				pstmt.setInt(1, userId);
+				pstmt.setDate(2, date_sql);
 				rs = pstmt.executeQuery();
-				while(rs.next() == true) {
+				while (rs.next() == true) {
 					postId = rs.getInt("postId");
 					departmentId = rs.getInt("departmentId");
 					methodId = rs.getInt("methodId");
@@ -329,12 +327,11 @@ public class PostDAO {
 					Date date_u = rs.getDate("updatedAt");
 					//List型のexamSelectionの処理//
 					isActive = rs.getBoolean("isActive");
-					
-					
+
 					//localDateTime型に変換
-					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-					
+					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
+					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
+
 					//Postインスタンスを生成
 					Post post = new Post(
 							postId,
@@ -350,21 +347,20 @@ public class PostDAO {
 							createAt,
 							updatedAt,
 							examSelection,
-							isActive
-					);
-					
+							isActive);
+
 					//listに格納
 					list.add(post);
-					
+
 				}
 			}
 			rs.close();
 			pstmt.close();
 			return list;
-		}catch(SQLException e) {
+		} catch (SQLException e) {
 			//情報取得に失敗(未規定)
 			throw new Exception("DB-2003");
-		}finally {
+		} finally {
 			ConnectionDAO.closeConnection(con);
 		}
 	}
@@ -401,6 +397,11 @@ public class PostDAO {
 	public int insertPost(Post post) {
 		// TODO 自動生成されたメソッド・スタブ
 		return 0;
+	}
+
+	public void update(Post post) {
+		// TODO 自動生成されたメソッド・スタブ
+
 	}
 
 }

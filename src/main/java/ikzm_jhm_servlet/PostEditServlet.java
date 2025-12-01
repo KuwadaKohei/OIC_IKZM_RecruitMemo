@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
+import ikzm_jhm_action.PostAction;
 import ikzm_jhm_action.PostManageAction;
 import ikzm_jhm_dto.User;
 import ikzm_jhm_model.PostForm;
@@ -23,6 +24,33 @@ import ikzm_jhm_utils.ModelConverter;
 @WebServlet("/ReportEdit")
 public class PostEditServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("loginUser");
+
+		String postIdStr = request.getParameter("id");
+
+		int postId = Integer.parseInt(postIdStr);
+
+		PostAction postAction = new PostAction();
+		PostForm form = postAction.getPostFormForEdit(postId, user.getUserId());
+
+		if (form == null) {
+			//権限がない、またはデータがない
+			request.setAttribute("errorMessage", "");
+			//エラー画面があればそちらへ、なければ一覧へ戻すなど
+			response.sendRedirect(request.getContextPath() + "/ReportList");
+			return;
+		}
+
+		request.setAttribute("postForm", form);
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/postEdit.jsp");
+		dispatcher.forward(request, response);
+	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
