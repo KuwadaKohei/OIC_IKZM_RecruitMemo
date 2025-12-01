@@ -92,9 +92,6 @@ public class PostManageAction {
 			int postId = form.getPostId();
 			
 			
-		}catch(Exception e) {
-			
-			
 		}
 	}
 
