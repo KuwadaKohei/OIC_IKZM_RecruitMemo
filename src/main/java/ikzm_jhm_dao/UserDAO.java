@@ -250,4 +250,9 @@ public class UserDAO {
 
 	}
 
+	public boolean updateDepartmentInfo(int userId, int departmentId, int grade) {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
 }
