@@ -35,7 +35,7 @@ public class PostAction {
 	}
 
 	//ユーザーから受け取った検索情報をもとに必要なDAOを呼び出す
-	public SearchResultViewModel searchPosts(int searchWord) {
+	public SearchResultViewModel searchPosts(String searchWord) {
 		PostDAO dao = new PostDAO();
 		List<Post> posts = null;
 
@@ -49,17 +49,14 @@ public class PostAction {
 
 		if (term.startsWith("#")) {
 			// #求人番号検索
-			posts = dao.searchPostByRecruitmentNo(term.substring(1));
+			int termInt = Integer.parseInt(term.substring(1));
+			posts = dao.searchPostByRecruitmentNo(termInt);
 
 		} else if (term.startsWith("@")) {
 			//日付検索
-			try {
-				String dateStr = term.substring(1);
-				LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				posts = dao.searchPostByExamDate(date);
-			} catch (Exception e) {
-
-			}
+			String dateStr = term.substring(1);
+			LocalDate date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+			posts = dao.searchPostByExamDate(date);
 
 		} else {
 			//通常検索
@@ -120,7 +117,8 @@ public class PostAction {
 			}
 		}
 
-		return ModelConverter.toPostViewModel(post,detail,deptName,methodName,posterName,examCategoryMap,examNameMap);
+		return ModelConverter.toPostViewModel(post, detail, deptName, methodName, posterName, examCategoryMap,
+				examNameMap);
 	}
 
 	public List<PostViewModel> getMyPostList(int userId) {
