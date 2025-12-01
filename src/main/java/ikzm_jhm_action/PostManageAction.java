@@ -1,4 +1,4 @@
-package ikzm_jhm_action;
+	package ikzm_jhm_action;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +41,9 @@ public class PostManageAction {
 
 			PostDetail detail = ModelConverter.toPostDetailDto(form);
 			detail.setPostId(newPostId);
+			
+			PostDetailDAO detailDao = new PostDetailDAO();
+		    detailDao.insert(detail);
 
 			List<PostExamSelection> selections = ModelConverter.toSelectionList(form);
 
