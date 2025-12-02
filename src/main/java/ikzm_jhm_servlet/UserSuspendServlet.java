@@ -51,14 +51,14 @@ public class UserSuspendServlet extends HttpServlet {
 		String action = request.getParameter("action");
 
 		//制限・制限解除の対象になるユーザーのユーザーIDを受け取る
-		String target = request.getParameter("target");
+		String userId = request.getParameter("userId");
 
 		UserAction userAction = new UserAction();
 
 		//管理者が選択したユーザーを本当に制限するのか確認する。
 		if ("confirmBan".equals(action)) {
 
-			request.setAttribute("target", target);
+			request.setAttribute("userId", userId);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmBan");
 			dispatcher.forward(request, response);
@@ -69,7 +69,7 @@ public class UserSuspendServlet extends HttpServlet {
 		//管理者が選択したユーザーの制限を本当にするのかを確認する。
 		if ("confirmUnBan.".equals(action)) {
 
-			request.setAttribute("target", target);
+			request.setAttribute("userId", userId);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmUnBan");
 			dispatcher.forward(request, response);
@@ -80,9 +80,9 @@ public class UserSuspendServlet extends HttpServlet {
 		//管理者が確認を承諾し、制限処理を実行する。
 		if ("executeBan".equals(action)) {
 
-			userAction.banUser(target);
+			userAction.banUser(userId);
 
-			request.setAttribute("target", target);
+			request.setAttribute("userId", userId);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/successBan.jsp");
 			dispatcher.forward(request, response);
@@ -93,9 +93,9 @@ public class UserSuspendServlet extends HttpServlet {
 		//管理者が確認を承諾し、制限解除処理を確認する。
 		if ("executeUnBan".equals(action)) {
 
-			userAction.unBanUser(target);
+			userAction.unBanUser(userId);
 
-			request.setAttribute("target", target);
+			request.setAttribute("userId", userId);
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/successUnBan.jsp");
 			dispatcher.forward(request, response);
