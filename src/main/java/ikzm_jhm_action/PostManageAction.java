@@ -98,6 +98,7 @@ public class PostManageAction {
 			for (PostExamSelection sel : selections) {
 				sel.setPostId(postId);
 			}
+			selectionDao.insertList(postId);
 		}
 		
 		return true;
