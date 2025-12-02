@@ -29,7 +29,7 @@ public class UserSuspendServlet extends HttpServlet {
 		String searchWord = request.getParameter("searchWord");
 
 		//初期状態、管理者からの検索を受け付け結果を返す
-		if (searchWord != null || !searchWord.isBlank()) {
+		if (searchWord != null && !searchWord.isBlank()) {
 
 			ArrayList<User> userList = new ArrayList<User>();
 
