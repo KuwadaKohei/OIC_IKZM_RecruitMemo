@@ -25,39 +25,35 @@ public class UserSuspendServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/BanUser.jsp");
-		dispatcher.forward(request, response);
+		//検索フォームに入力された文字列を受け取る
+		String searchWord = request.getParameter("searchWord");
 
+		//初期状態、管理者からの検索を受け付け結果を返す
+		if (searchWord != null || !searchWord.isBlank()) {
+
+			ArrayList<User> userList = new ArrayList<User>();
+
+			UserAction userAction = new UserAction();
+			userList = userAction.searchUser(searchWord);
+
+			request.setAttribute("searchResult", userList);
+
+		}
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/searchManageUser.jsp");
+		dispatcher.forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		 //操作の種類を受け取る
+		//操作の種類を受け取る
 		String action = request.getParameter("action");
-		
-		//検索フォームに入力された文字列を受け取る
-		String searchWord = request.getParameter("searchWord");
-		
+
 		//制限・制限解除の対象になるユーザーのユーザーIDを受け取る
 		String target = request.getParameter("target");
 
 		UserAction userAction = new UserAction();
-
-		//初期状態、管理者からの検索を受け付け結果を返す
-		if ("search".equals(action)) {
-
-			ArrayList<User> userList = new ArrayList<User>();
-
-			userList = userAction.searchUser(searchWord);
-
-			request.setAttribute("searchResult", userList);
-
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/searchManageUser.jsp");
-			dispatcher.forward(request, response);
-
-			return;
-		}
 
 		//管理者が選択したユーザーを本当に制限するのか確認する。
 		if ("confirmBan".equals(action)) {
@@ -66,7 +62,7 @@ public class UserSuspendServlet extends HttpServlet {
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmBan");
 			dispatcher.forward(request, response);
-			
+
 			return;
 		}
 
@@ -77,7 +73,7 @@ public class UserSuspendServlet extends HttpServlet {
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/confirmUnBan");
 			dispatcher.forward(request, response);
-			
+
 			return;
 		}
 
