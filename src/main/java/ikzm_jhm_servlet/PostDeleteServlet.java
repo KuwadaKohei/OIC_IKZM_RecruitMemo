@@ -38,7 +38,7 @@ public class PostDeleteServlet extends HttpServlet {
 		PostDAO postDAO = new PostDAO();
 
 		//不正を検知、ログアウト処理
-		if (user.getUserId() != targetId || !user.isAdmin()) {
+		if (user.getUserId() != targetId && !user.isAdmin()) {
 			session.invalidate();
 
 			RequestDispatcher dispatcher = request.getRequestDispatcher("/unauthorized.jsp");
