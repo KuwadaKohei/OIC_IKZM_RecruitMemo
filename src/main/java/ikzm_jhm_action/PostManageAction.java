@@ -6,6 +6,7 @@ import java.util.List;
 import ikzm_jhm_dao.PostDAO;
 import ikzm_jhm_dao.PostDetailDAO;
 import ikzm_jhm_dao.PostExamSelectionDAO;
+import ikzm_jhm_dao.SelectionDAO;
 import ikzm_jhm_dto.Post;
 import ikzm_jhm_dto.PostDetail;
 import ikzm_jhm_dto.PostExamSelection;
