@@ -68,6 +68,11 @@ public class ModelConverter {
 			String posterName,
 			Map<Integer, String> examCategoryMap,
 			Map<Integer, String> examNameMap) {
+		
+		if(examCategoryMap == null) {
+			examCategoryMap = new HashMap<>();
+		}
+		
 		List<PostViewModel.SelectedExamItem> examItems = new ArrayList<>();
 
 		if (post.getExamSelection() != null) {
