@@ -29,8 +29,26 @@
 		<input type="radio" name="methodId" value=1>自己開拓
 		<input type="radio" name="methodId" value=2>縁故
 		
+		<!-- 受験形式 -->
+		<p id="write" onclick="openModal(write)">筆記試験</p><br>
+		<p id="check" onclick="openModal(check)">諸検査</p><br>
+		<p id="essay" onclick="openModal(essay)">作文</p><br>
+		<p id="interview" onclick="openModal(interview)">面接</p><br>
+		<p id="discussion" onclick="openModal(discussion)">グループディスカッション</p>
+		
 		<!-- 受験のアドバイス☆ -->
 		<input type="text" name="adviceText">
 	</form>
+	
+	<!-- 筆記試験のモーダル -->
+	
+	<!-- 諸検査のモーダル -->
+	
+	<!-- 作文のモーダル -->
+	
+	<!-- 面接のモーダル -->
+	
+	<!-- グループディスカッションのモーダル -->
+	
 </body>
 </html>
