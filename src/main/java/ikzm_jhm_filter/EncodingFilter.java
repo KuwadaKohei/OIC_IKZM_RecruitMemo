@@ -15,6 +15,9 @@ import jakarta.servlet.annotation.WebFilter;
 @WebFilter("/*")
 public class EncodingFilter implements Filter {
 
+	/**
+	 * 文字エンコーディングをUTF-8に固定して後続処理へ渡す。
+	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 

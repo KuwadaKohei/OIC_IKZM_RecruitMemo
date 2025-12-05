@@ -1,407 +1,513 @@
-/***************************/
-/* メモの操作 **************/
-/***************************/
 package ikzm_jhm_dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import ikzm_jhm_dto.Post;
-import ikzm_jhm_dto.PostExamSelection;
 
+/**
+ * 投稿テーブル(posts)を操作するDAOクラス。
+ * <p>
+ * 各メソッドは必要に応じて新規にDBコネクションを取得し、論理削除フラグ(is_active)を考慮したデータアクセスを提供する。
+ * </p>
+ */
 public class PostDAO {
-	//postIdをキーにしてメモ検索
-	public Post searchPostById(int target) throws Exception {
-		Connection con = ConnectionDAO.createConnection();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 
-		Post post = new Post();
+	private final ConnectionDAO connectionDao = new ConnectionDAO();
 
-		int userId = 0;
-		int departmentId = 0;
-		int methodId = 0;
-		String recruitmentNo = null;
-		String companyName = null;
-		String venueAddress = null;
-		LocalDate examDate = null;
-		int grade = 0;
-		boolean isAnonymous = false;
-		LocalDateTime createAt = null;
-		LocalDateTime updatedAt = null;
-		List<PostExamSelection> examSelection = null;
-		boolean isActive = false;
+	/**
+	 * 論理削除されていない投稿を更新日時の降順で全件取得する。
+	 * 
+	 * @return 検索結果のDTOリスト（0件の場合は空リスト）
+	 */
+	public List<Post> findAll() throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause() + "WHERE is_active = 1 ORDER BY updated_at DESC";
 
-		try {
-			if (con != null) {
-				String sql = "SELECT * FROM POST WHERE POSTID = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1, target);
-				rs = pstmt.executeQuery();
-				while (rs.next() == true) {
-					userId = rs.getInt("userId");
-					departmentId = rs.getInt("departmentId");
-					methodId = rs.getInt("methodId");
-					recruitmentNo = rs.getString("recruitmentNo");
-					companyName = rs.getString("companyName");
-					venueAddress = rs.getString("venueAddress");
-					Date date_e = rs.getDate("examDate");
-					grade = rs.getInt("grade");
-					isAnonymous = rs.getBoolean("isAnonymous");
-					Date date_c = rs.getDate("createAt");
-					Date date_u = rs.getDate("updatedAt");
-					//List型のexamSelectionの処理//
-					isActive = rs.getBoolean("isActive");
-
-					//localDate型に変換
-					examDate = LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
-
-					//localDateTime型に変換
-					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-				}
-
-				//Postの中身を格納
-				post.setPostId(target);
-				post.setUserId(userId);
-				post.setDepartmentId(departmentId);
-				post.setMethodId(methodId);
-				post.setRecruitmentNo(recruitmentNo);
-				post.setCompanyName(companyName);
-				post.setVenueAddress(venueAddress);
-				post.setExamDate(examDate);
-				post.setGrade(grade);
-				post.setAnonymous(isAnonymous);
-				post.setCreateAt(createAt);
-				post.setUpdatedAt(updatedAt);
-				post.setExamSelection(examSelection);
-				post.setActive(isActive);
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
 			}
-			rs.close();
-			pstmt.close();
-			return post;
 		} catch (SQLException e) {
-			//情報取得に失敗(未規定)
-			throw new Exception("DB-2003");
-		} finally {
-			ConnectionDAO.closeConnection(con);
+			throw new Exception("DB-0001");
 		}
+
+		return posts;
 	}
 
-	//userIdをキーにしてメモ検索
-	public ArrayList<Post> searchPostListByUserId(int userId) throws Exception {
-		Connection con = ConnectionDAO.createConnection();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		ArrayList<Post> list = new ArrayList<>();
-		
-		int postId = 0;
-		int departmentId = 0;
-		int methodId = 0;
-		String recruitmentNo = null;
-		String companyName = null;
-		String venueAddress = null;
-		LocalDate examDate = null;
-		int grade = 0;
-		boolean isAnonymous = false;
-		LocalDateTime createAt = null;
-		LocalDateTime updatedAt = null;
-		List<PostExamSelection> examSelection = null;
-		boolean isActive = false;
-		
-		try {
-			if(con != null) {
-				String sql = "SELECT * FROM POST WHERE USERID = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1 , userId);
-				rs = pstmt.executeQuery();
-				while(rs.next() == true) {
-					postId = rs.getInt("postId");
-					departmentId = rs.getInt("departmentId");
-					methodId = rs.getInt("methodId");
-					recruitmentNo = rs.getString("recruitmentNo");
-					companyName = rs.getString("companyName");
-					venueAddress = rs.getString("venueAddress");
-					Date date_e = rs.getDate("examDate");
-					grade = rs.getInt("grade");
-					isAnonymous = rs.getBoolean("isAnonymous");
-					Date date_c = rs.getDate("createAt");
-					Date date_u = rs.getDate("updatedAt");
-					//List型のexamSelectionの処理//
-					isActive = rs.getBoolean("isActive");
-					
-					//localDate型に変換
-					examDate =  LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
-					
-					//localDateTime型に変換
-					createAt =  LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt =  LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-					
-					//Postインスタンスを生成
-					Post post = new Post(
-							postId,
-							userId,
-							departmentId,
-							methodId,
-							recruitmentNo,
-							companyName,
-							venueAddress,
-							examDate,
-							grade,
-							isAnonymous,
-							createAt,
-							updatedAt,
-							examSelection,
-							isActive
-					);
-					
-					//listに格納
-					list.add(post);
-					
-				}
-			}
-			rs.close();
-			pstmt.close();
-			return list;
-		}catch(SQLException e) {
-			//情報取得に失敗(未規定)
-			throw new Exception("DB-2003");
-		}finally {
-			ConnectionDAO.closeConnection(con);
-		}
+	/**
+	 * 投稿IDをキーに論理削除されていない投稿を1件取得する。
+	 * 
+	 * @param postId 投稿ID
+	 * @return DTO（見つからない場合はnull
+	 */
+	public Post searchPostById(int postId) throws Exception {
+		Post post = null;
+		String sql = selectClause() + "WHERE post_id = ? AND is_active = 1";
 
-	//メモを削除する(疑似的に)
-	public void deletePost(int postId) throws Exception {
-		Connection con = ConnectionDAO.createConnection();
-		PreparedStatement pstmt = null;
-
-		try {
-			if (con != null) {
-				String sql = "UPDATE POST SET ISACTIVE = false WHERE POSTID = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1, postId);
-				pstmt.executeUpdate();
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, postId);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				post = mapPost(rs);
 			}
-			pstmt.close();
 		} catch (SQLException e) {
-			//情報削除に失敗(未規定)
-			throw new Exception("DB-2003");
-
-		} finally {
-			ConnectionDAO.closeConnection(con);
+			throw new Exception("DB-0001");
 		}
+
+		return post;
 	}
 
-	//POSTテーブルからユーザーIDと求人番号を使用してPostリストを取得する
-	public List<Post> searchPostByRecruitmentNo(int userId, String substring) throws Exception {
-		Connection con = ConnectionDAO.createConnection();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		ArrayList<Post> list = new ArrayList<>();
+	/**
+	 * 指定ユーザーが作成した投稿を全件取得する。
+	 * 
+	 * @param userId ユーザーID
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostListByUserId(int userId) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE user_id = ? AND is_active = 1 ORDER BY updated_at DESC";
 
-		int postId = 0;
-		int departmentId = 0;
-		int methodId = 0;
-		String companyName = null;
-		String venueAddress = null;
-		LocalDate examDate = null;
-		int grade = 0;
-		boolean isAnonymous = false;
-		LocalDateTime createAt = null;
-		LocalDateTime updatedAt = null;
-		List<PostExamSelection> examSelection = null;
-		boolean isActive = false;
-
-		try {
-			if (con != null) {
-				String sql = "SELECT * FROM POST WHERE USERID = ? AND RECURUITMENTNO = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1, userId);
-				pstmt.setString(2, substring);
-				rs = pstmt.executeQuery();
-				while (rs.next() == true) {
-					postId = rs.getInt("postId");
-					departmentId = rs.getInt("departmentId");
-					methodId = rs.getInt("methodId");
-					companyName = rs.getString("companyName");
-					venueAddress = rs.getString("venueAddress");
-					Date date_e = rs.getDate("examDate");
-					grade = rs.getInt("grade");
-					isAnonymous = rs.getBoolean("isAnonymous");
-					Date date_c = rs.getDate("createAt");
-					Date date_u = rs.getDate("updatedAt");
-					//List型のexamSelectionの処理//
-					isActive = rs.getBoolean("isActive");
-
-					//localDate型に変換
-					examDate = LocalDate.ofInstant(date_e.toInstant(), ZoneId.systemDefault());
-
-					//localDateTime型に変換
-					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-
-					//Postインスタンスを生成
-					Post post = new Post(
-							postId,
-							userId,
-							departmentId,
-							methodId,
-							substring,
-							companyName,
-							venueAddress,
-							examDate,
-							grade,
-							isAnonymous,
-							createAt,
-							updatedAt,
-							examSelection,
-							isActive);
-
-					//listに格納
-					list.add(post);
-
-				}
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
 			}
-			rs.close();
-			pstmt.close();
-			return list;
 		} catch (SQLException e) {
-			//情報取得に失敗(未規定)
-			throw new Exception("DB-2003");
-		} finally {
-			ConnectionDAO.closeConnection(con);
+			throw new Exception("DB-0001");
 		}
+
+		return posts;
 	}
 
-	//POSTテーブルからユーザーIDと試験日付を使用してPostリストを取得する
+	/**
+	 * 求人票番号を条件に投稿を検索する。
+	 * 
+	 * @param recruitmentNo 求人票番号
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostByRecruitmentNo(int recruitmentNo) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE recruitment_no = ? AND is_active = 1 ORDER BY updated_at DESC";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, recruitmentNo);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * ユーザーIDと求人票番号を条件に投稿を検索する。
+	 * 
+	 * @param userId        ユーザーID
+	 * @param recruitmentNo 求人票番号
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostByRecruitmentNo(int userId, int recruitmentNo) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE user_id = ? AND recruitment_no = ? AND is_active = 1 ORDER BY updated_at DESC";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+			stmt.setInt(2, recruitmentNo);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * 受験日を条件に投稿を検索する。
+	 * 
+	 * @param examDate 受験日
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostByExamDate(LocalDate examDate) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE exam_date = ? AND is_active = 1 ORDER BY updated_at DESC";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			if (examDate != null) {
+				stmt.setDate(1, Date.valueOf(examDate));
+			} else {
+				stmt.setNull(1, Types.DATE);
+			}
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * ユーザーIDと受験日を条件に投稿を検索する。
+	 * 
+	 * @param userId   ユーザーID
+	 * @param examDate 受験日
+	 * @return 投稿リスト
+	 */
 	public List<Post> searchPostByExamDate(int userId, LocalDate examDate) throws Exception {
-		Connection con = ConnectionDAO.createConnection();
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		ArrayList<Post> list = new ArrayList<>();
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE user_id = ? AND exam_date = ? AND is_active = 1 ORDER BY updated_at DESC";
 
-		//LocalDate→String→java.sql.Dateに変換
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String date = simpleDateFormat.format(examDate.toString());
-		java.sql.Date date_sql = java.sql.Date.valueOf(date);
-
-		int postId = 0;
-		int departmentId = 0;
-		int methodId = 0;
-		String companyName = null;
-		String recruitmentNo = null;
-		String venueAddress = null;
-		int grade = 0;
-		boolean isAnonymous = false;
-		LocalDateTime createAt = null;
-		LocalDateTime updatedAt = null;
-		List<PostExamSelection> examSelection = null;
-		boolean isActive = false;
-
-		try {
-			if (con != null) {
-				String sql = "SELECT * FROM POST WHERE USERID = ? AND RECURUITMENTNO = ?";
-				pstmt = con.prepareStatement(sql);
-				pstmt.setInt(1, userId);
-				pstmt.setDate(2, date_sql);
-				rs = pstmt.executeQuery();
-				while (rs.next() == true) {
-					postId = rs.getInt("postId");
-					departmentId = rs.getInt("departmentId");
-					methodId = rs.getInt("methodId");
-					recruitmentNo = rs.getString("recruitmentNo");
-					companyName = rs.getString("companyName");
-					venueAddress = rs.getString("venueAddress");
-					grade = rs.getInt("grade");
-					isAnonymous = rs.getBoolean("isAnonymous");
-					Date date_c = rs.getDate("createAt");
-					Date date_u = rs.getDate("updatedAt");
-					//List型のexamSelectionの処理//
-					isActive = rs.getBoolean("isActive");
-
-					//localDateTime型に変換
-					createAt = LocalDateTime.ofInstant(date_c.toInstant(), ZoneId.systemDefault());
-					updatedAt = LocalDateTime.ofInstant(date_u.toInstant(), ZoneId.systemDefault());
-
-					//Postインスタンスを生成
-					Post post = new Post(
-							postId,
-							userId,
-							departmentId,
-							methodId,
-							recruitmentNo,
-							companyName,
-							venueAddress,
-							examDate,
-							grade,
-							isAnonymous,
-							createAt,
-							updatedAt,
-							examSelection,
-							isActive);
-
-					//listに格納
-					list.add(post);
-
-				}
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, userId);
+			if (examDate != null) {
+				stmt.setDate(2, Date.valueOf(examDate));
+			} else {
+				stmt.setNull(2, Types.DATE);
 			}
-			rs.close();
-			pstmt.close();
-			return list;
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
 		} catch (SQLException e) {
-			//情報取得に失敗(未規定)
-			throw new Exception("DB-2003");
-		} finally {
-			ConnectionDAO.closeConnection(con);
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * 会社名または会場住所のLIKE検索を行う。
+	 * 
+	 * @param keyword キーワード
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostByKeyword(String keyword) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE is_active = 1 AND (company_name LIKE ? OR venue_address LIKE ?) ORDER BY updated_at DESC";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			String pattern = buildLikePattern(keyword);
+			stmt.setString(1, pattern);
+			stmt.setString(2, pattern);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * ユーザーIDを含むキーワード検索を行う。
+	 * 
+	 * @param userId  ユーザーID
+	 * @param keyword キーワード
+	 * @return 投稿リスト
+	 */
+	public List<Post> searchPostByKeyword(int userId, String keyword) throws Exception {
+		List<Post> posts = new ArrayList<Post>();
+		String sql = selectClause()
+				+ "WHERE user_id = ? AND is_active = 1 AND (company_name LIKE ? OR venue_address LIKE ?) ORDER BY updated_at DESC";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			String pattern = buildLikePattern(keyword);
+			stmt.setInt(1, userId);
+			stmt.setString(2, pattern);
+			stmt.setString(3, pattern);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				posts.add(mapPost(rs));
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0001");
+		}
+
+		return posts;
+	}
+
+	/**
+	 * 投稿を新規登録し、採番されたIDを返却する。
+	 * <p>
+	 * トランザクションを共有したい場合は、外部でコネクションを管理しPreparedStatementを組み立てる実装へ差し替えることを想定している。
+	 * </p>
+	 * 
+	 * @param post 登録対象DTO
+	 * @return 採番されたID（失敗時は0）
+	 */
+	public int insertPost(Post post) throws Exception {
+		try (Connection conn = connectionDao.getConnection()) {
+			return insertPost(post, conn);
+		} catch (SQLException e) {
+			throw new Exception("DB-0002");
 		}
 	}
 
-	public List<Post> searchPostByKeyword(int userId, String term) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	/**
+	 * 既存コネクションを利用して投稿を登録する。
+	 *
+	 * @param post 登録対象DTO
+	 * @param conn 共有トランザクション用コネクション
+	 * @return 採番されたID
+	 * @throws SQLException SQL例外
+	 */
+	public int insertPost(Post post, Connection conn) throws Exception {
+		int generatedId = 0;
+		String sql = "INSERT INTO posts (user_id, department_id, method_id, recruitment_no, company_name, venue_address, exam_date, grade, is_anonymous, created_at, updated_at, is_active) "
+				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+			bindInsertParameters(stmt, post);
+			int affected = stmt.executeUpdate();
+			if (affected > 0) {
+				ResultSet rs = stmt.getGeneratedKeys();
+				if (rs.next()) {
+					generatedId = rs.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			throw new Exception("DB-0002");
+		}
+
+		return generatedId;
 	}
 
-	public List<Post> findAll() {
-		/*SQLクエリ
-		SELECT * FROM Posts 
-		WHERE is_deleted = false  -- 論理削除されていないもの
-		AND exam_date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR) -- 過去3年以内
-		ORDER BY created_at DESC; -- 作成日時の降順（新しい順）
-		 */
+	/**
+	 * 投稿を更新する。
+	 * 
+	 * @param post 更新内容を含むDTO
+	 * @return 更新件数が1件以上ならtrue
+	 */
+	public boolean update(Post post) throws Exception {
+		try (Connection conn = connectionDao.getConnection()) {
+			return update(post, conn);
+		} catch (SQLException e) {
+			throw new Exception("DB-0003");
+		}
 	}
 
-	public List<Post> searchPostByExamDate(LocalDate date) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	/**
+	 * 既存コネクションを利用して投稿を更新する。
+	 *
+	 * @param post 更新内容を含むDTO
+	 * @param conn 共有トランザクション用コネクション
+	 * @return 更新件数が1件以上ならtrue
+	 * @throws SQLException SQL例外
+	 */
+	public boolean update(Post post, Connection conn) throws Exception {
+		boolean updated = false;
+		String sql = "UPDATE posts SET department_id = ?, method_id = ?, recruitment_no = ?, company_name = ?, venue_address = ?, "
+				+ "exam_date = ?, grade = ?, is_anonymous = ?, updated_at = ?, is_active = ? WHERE post_id = ? AND user_id = ?";
+
+		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setInt(1, post.getDepartmentId());
+			stmt.setInt(2, post.getMethodId());
+			setNullableInt(stmt, 3, post.getRecruitmentNo());
+			stmt.setString(4, post.getCompanyName());
+			stmt.setString(5, post.getVenueAddress());
+			setDateParameter(stmt, 6, post.getExamDate());
+			stmt.setInt(7, post.getGrade());
+			stmt.setBoolean(8, post.isAnonymous());
+			stmt.setTimestamp(9, toTimestamp(post.getUpdatedAt()));
+			stmt.setBoolean(10, post.isActive());
+			stmt.setInt(11, post.getPostId());
+			stmt.setInt(12, post.getUserId());
+
+			updated = stmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			throw new Exception("DB-0003");
+		}
+
+		return updated;
 	}
 
-	public List<Post> searchPostByRecruitmentNo(int termInt) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	/**
+	 * 投稿を論理削除する。
+	 * 
+	 * @param postId 投稿ID
+	 * @return 更新件数が1件以上ならtrue
+	 */
+	public boolean deletePost(int postId) throws Exception {
+		boolean deleted = false;
+		String sql = "UPDATE posts SET is_active = 0, updated_at = ? WHERE post_id = ?";
+
+		try (Connection conn = connectionDao.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+			stmt.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+			stmt.setInt(2, postId);
+			deleted = stmt.executeUpdate() > 0;
+		} catch (SQLException e) {
+			throw new Exception("DB-0004");
+		}
+
+		return deleted;
 	}
 
-	public List<Post> searchPostByKeyword(String term) {
-		// TODO 自動生成されたメソッド・スタブ
-		return null;
+	/**
+	 * 再利用するSELECT句を生成する。
+	 * 
+	 * @return SELECT句
+	 */
+	private String selectClause() {
+		return "SELECT post_id, user_id, department_id, method_id, recruitment_no, company_name, venue_address, exam_date, grade, is_anonymous, created_at, updated_at, is_active FROM posts ";
 	}
 
-	public int insertPost(Post post) {
-		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+	/**
+	 * ResultSetの1行をPost DTOへマッピングする。
+	 * 
+	 * @param rs クエリ結果
+	 * @return DTO
+	 * @throws SQLException 変換時の例外
+	 */
+	private Post mapPost(ResultSet rs) throws SQLException {
+		Post post = new Post();
+		post.setPostId(rs.getInt("post_id"));
+		post.setUserId(rs.getInt("user_id"));
+		post.setDepartmentId(rs.getInt("department_id"));
+		post.setMethodId(rs.getInt("method_id"));
+		post.setRecruitmentNo(rs.getInt("recruitment_no"));
+		post.setCompanyName(rs.getString("company_name"));
+		post.setVenueAddress(rs.getString("venue_address"));
+
+		Date examDate = rs.getDate("exam_date");
+		if (examDate != null) {
+			post.setExamDate(examDate.toLocalDate());
+		}
+
+		post.setGrade(rs.getInt("grade"));
+		post.setAnonymous(rs.getBoolean("is_anonymous"));
+
+		Timestamp createdAt = rs.getTimestamp("created_at");
+		if (createdAt != null) {
+			post.setCreateAt(createdAt.toLocalDateTime());
+		}
+
+		Timestamp updatedAt = rs.getTimestamp("updated_at");
+		if (updatedAt != null) {
+			post.setUpdatedAt(updatedAt.toLocalDateTime());
+		}
+
+		post.setActive(rs.getBoolean("is_active"));
+		return post;
 	}
 
-	public void update(Post post) {
-		// TODO 自動生成されたメソッド・スタブ
+	/**
+	 * INSERT文に必要なパラメータをPreparedStatementへ設定する。
+	 * 
+	 * @param stmt PreparedStatement
+	 * @param post DTO
+	 * @throws SQLException パラメータ設定時の例外
+	 */
+	private void bindInsertParameters(PreparedStatement stmt, Post post) throws SQLException {
+		LocalDateTime createdAt = post.getCreateAt();
+		LocalDateTime updatedAt = post.getUpdatedAt();
+		if (createdAt == null) {
+			createdAt = LocalDateTime.now();
+		}
+		if (updatedAt == null) {
+			updatedAt = createdAt;
+		}
 
+		stmt.setInt(1, post.getUserId());
+		stmt.setInt(2, post.getDepartmentId());
+		stmt.setInt(3, post.getMethodId());
+		setNullableInt(stmt, 4, post.getRecruitmentNo());
+		stmt.setString(5, post.getCompanyName());
+		stmt.setString(6, post.getVenueAddress());
+		setDateParameter(stmt, 7, post.getExamDate());
+		stmt.setInt(8, post.getGrade());
+		stmt.setBoolean(9, post.isAnonymous());
+		stmt.setTimestamp(10, Timestamp.valueOf(createdAt));
+		stmt.setTimestamp(11, Timestamp.valueOf(updatedAt));
+		stmt.setBoolean(12, post.isActive());
 	}
 
+	/**
+	 * LocalDateをSQL DATEへ変換して設定する。
+	 * 
+	 * @param stmt  PreparedStatement
+	 * @param index プレースホルダ位置
+	 * @param date  変換元日付
+	 * @throws SQLException 変換時の例外
+	 */
+	private void setDateParameter(PreparedStatement stmt, int index, LocalDate date) throws SQLException {
+		if (date != null) {
+			stmt.setDate(index, Date.valueOf(date));
+		} else {
+			stmt.setNull(index, Types.DATE);
+		}
+	}
+
+	/**
+	 * 0以下をNULL扱いにしつつ整数値を設定する。
+	 * 
+	 * @param stmt  PreparedStatement
+	 * @param index プレースホルダ位置
+	 * @param value 設定する値
+	 * @throws SQLException 設定時の例外
+	 */
+	private void setNullableInt(PreparedStatement stmt, int index, int value) throws SQLException {
+		if (value > 0) {
+			stmt.setInt(index, value);
+		} else {
+			stmt.setNull(index, Types.INTEGER);
+		}
+	}
+
+	/**
+	 * LIKE演算子で使用する検索パターンを生成する。
+	 * 
+	 * @param keyword 生のキーワード
+	 * @return "%keyword%" 形式の文字列（nullの場合はワイルドカードのみ）
+	 */
+	private String buildLikePattern(String keyword) {
+		String pattern = "%";
+		if (keyword != null) {
+			pattern = "%" + keyword + "%";
+		}
+		return pattern;
+	}
+
+	/**
+	 * LocalDateTimeをTimestampへ変換する。nullの場合は現在時刻を使用する。
+	 * 
+	 * @param value 変換元日時
+	 * @return Timestamp
+	 */
+	private Timestamp toTimestamp(LocalDateTime value) {
+		LocalDateTime target = value;
+		if (target == null) {
+			target = LocalDateTime.now();
+		}
+		return Timestamp.valueOf(target);
+	}
 }
