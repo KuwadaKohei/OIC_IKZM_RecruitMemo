@@ -16,7 +16,7 @@ import ikzm_jhm_viewmodel.SearchResultViewModel;
 /**
  * 投稿一覧を取得し、トップページを表示するサーブレット。
  */
-@WebServlet({ "/ReportList", "/index.jsp", "/Home" })
+@WebServlet({ "/ReportList", "/Home" })
 public class PostListServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_BACK_PATH = "/ReportList";
@@ -50,7 +50,7 @@ public class PostListServlet extends HttpServlet {
 
 			request.setAttribute("postList", viewModel);
 
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/WEB-INF/views/reportList.jsp");
 			dispatcher.forward(request, response);
 		} catch (Exception e) {
 			request.setAttribute("backUrl", request.getContextPath() + DEFAULT_BACK_PATH);
