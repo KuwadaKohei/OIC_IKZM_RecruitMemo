@@ -22,7 +22,7 @@
         </plugins>
     </build>
     <dependencies>
-        <!--   Google API Client (OAuth2 / IDトークン検証)   -->
+        <!--   Google API Client   -->
         <dependency>
             <groupId>com.google.api-client</groupId>
             <artifactId>google-api-client</artifactId>
@@ -36,9 +36,21 @@
         </dependency>
         <!--   JDBC Driver (MySQL)   -->
         <dependency>
-            <groupId>mysql</groupId>
+            <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.0.33</version>
+        </dependency>
+        <!--   Jakarta Standard Tag Library API   -->
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <!--   Jakarta Standard Tag Library Implementation   -->
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+            <version>3.0.1</version>
         </dependency>
     </dependencies>
 </project>
