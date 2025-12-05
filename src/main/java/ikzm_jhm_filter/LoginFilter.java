@@ -6,6 +6,7 @@ import java.util.List;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import ikzm_jhm_dto.User;
+import ikzm_jhm_model.Error;
 
 /**
  * ログイン認証を確認するフィルター。
@@ -23,7 +25,7 @@ import ikzm_jhm_dto.User;
 @WebFilter("/*")
 public class LoginFilter implements Filter {
 
-	//ホワイトリスト
+	// ホワイトリスト
 	private static final List<String> EXCLUDE_PATHS = Arrays.asList(
 			"/Login",
 			"/login.jsp",
@@ -31,6 +33,9 @@ public class LoginFilter implements Filter {
 			"/js",
 			"/images");
 
+	/**
+	 * ログイン状態を確認し、未ログイン時は共通エラーへフォワードする。
+	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -38,12 +43,12 @@ public class LoginFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-		//現在のリクエストパスを取得
+		// 現在のリクエストパスを取得
 		String requestPath = httpRequest.getServletPath();
 
-		//除外リストに含まれているか確認
+		// 除外リストに含まれているか確認
 		if (isExcluded(requestPath)) {
-			//除外対象ならチェックしない
+			// 除外対象ならチェックしない
 			chain.doFilter(request, response);
 			return;
 		}
@@ -62,13 +67,28 @@ public class LoginFilter implements Filter {
 			// ログイン済みなら通過
 			chain.doFilter(request, response);
 		} else {
-			// 未ログイン時はログイン画面へリダイレクト
-			httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.jsp");
+			forwardToError(httpRequest, httpResponse);
 		}
 	}
 
 	/**
-	 * リクエストパスが除外対象かどうかを判定する
+	 * 未ログインエラー画面へフォワードする。
+	 */
+	private void forwardToError(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		request.setAttribute("errorCode", "AUTH-1010");
+		request.setAttribute("error", Error.getMessage("AUTH-1010"));
+		request.setAttribute("backUrl", request.getContextPath() + "/Login");
+		request.setAttribute("backLabel", "ログイン画面に戻る");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/error.jsp");
+		dispatcher.forward(request, response);
+	}
+
+	/**
+	 * リクエストパスが除外対象かどうかを判定する。
+	 *
+	 * @param path サーブレットパス
+	 * @return true なら除外対象
 	 */
 	private boolean isExcluded(String path) {
 		for (String exclude : EXCLUDE_PATHS) {

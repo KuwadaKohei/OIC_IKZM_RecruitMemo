@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,42 +25,63 @@ public class ModelConverter {
 
 	private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	//表示系 (Output: DTO → ViewModel)
+	// 表示系 (Output: DTO → ViewModel)
+	/**
+	 * 投稿DTOリストを簡易検索結果ビューモデルに変換する。
+	 *
+	 * @param posts 投稿DTOリスト
+	 * @return ビューモデル
+	 */
 	public static SearchResultViewModel toSearchResultViewModel(List<Post> posts) {
+		return toSearchResultViewModel(posts, Collections.emptyMap(), Collections.emptyMap());
+	}
+
+	/**
+	 * 投稿DTOリストを検索結果ビューモデルに変換する。学科名と詳細情報を同時に埋め込む。
+	 *
+	 * @param posts               投稿DTOリスト
+	 * @param departmentCourseMap departmentId -> 学科名
+	 * @param postDetailMap       postId -> 投稿詳細
+	 * @return ビューモデル
+	 */
+	public static SearchResultViewModel toSearchResultViewModel(
+			List<Post> posts,
+			Map<Integer, String> departmentCourseMap,
+			Map<Integer, PostDetail> postDetailMap) {
+
 		List<SearchResultViewModel.Summary> summaries = new ArrayList<>();
 
 		if (posts != null) {
+			Map<Integer, String> safeDepartmentMap = (departmentCourseMap != null)
+					? departmentCourseMap
+					: Collections.emptyMap();
+			Map<Integer, PostDetail> safeDetailMap = (postDetailMap != null)
+					? postDetailMap
+					: Collections.emptyMap();
+
 			for (Post post : posts) {
-				// 試験選択情報の分解
-				List<Integer> selectedExamIds = new ArrayList<>();
-				Map<Integer, String> detailTexts = new HashMap<>();
-
-				if (post.getExamSelection() != null) {
-					for (PostExamSelection sel : post.getExamSelection()) {
-						selectedExamIds.add(sel.getContentId());
-						if (sel.getDetailText() != null) {
-							detailTexts.put(sel.getContentId(), sel.getDetailText());
-						}
-					}
-				}
-
-				int recruitmentNo = post.getRecruitmentNo();
+				String departmentCourseName = safeDepartmentMap.getOrDefault(post.getDepartmentId(), "未設定");
+				PostDetail detail = safeDetailMap.get(post.getPostId());
 
 				summaries.add(new SearchResultViewModel.Summary(
 						post.getPostId(),
 						post.getUserId(),
 						post.getDepartmentId(),
-						post.getMethodId(),
-						recruitmentNo,
+						departmentCourseName,
+						post.getRecruitmentNo(),
 						post.getCompanyName(),
 						post.getExamDate(),
-						selectedExamIds,
-						detailTexts));
+						post.getCreateAt(),
+						post.getUpdatedAt(),
+						detail));
 			}
 		}
 		return new SearchResultViewModel(summaries);
 	}
 
+	/**
+	 * 投稿情報と関連マスタを集約し、詳細表示用ビューモデルを生成する。
+	 */
 	public static PostViewModel toPostViewModel(
 			Post post,
 			PostDetail detail,
@@ -68,11 +90,11 @@ public class ModelConverter {
 			String posterName,
 			Map<Integer, String> examCategoryMap,
 			Map<Integer, String> examNameMap) {
-		
-		if(examCategoryMap == null) {
+
+		if (examCategoryMap == null) {
 			examCategoryMap = new HashMap<>();
 		}
-		
+
 		List<PostViewModel.SelectedExamItem> examItems = new ArrayList<>();
 
 		if (post.getExamSelection() != null) {
@@ -112,11 +134,14 @@ public class ModelConverter {
 				examItems);
 	}
 
-	//保存系 (Input: Form → DTO)
+	// 保存系 (Input: Form → DTO)
 
+	/**
+	 * フォーム入力を投稿DTOへ変換する。
+	 */
 	public static Post toPostDto(PostForm form, int userId) {
 		Post post = new Post();
-		
+
 		post.setPostId(form.getPostId());
 		post.setUserId(userId);
 		post.setCompanyName(form.getCompanyName());
@@ -131,9 +156,12 @@ public class ModelConverter {
 		return post;
 	}
 
+	/**
+	 * フォーム入力を投稿詳細DTOへ変換する。
+	 */
 	public static PostDetail toPostDetailDto(PostForm form) {
 		PostDetail detail = new PostDetail();
-		
+
 		detail.setPostId(form.getPostId());
 		detail.setAdviceText(form.getAdviceText());
 		detail.setResultDate(parseDate(form.getResultDateStr()));
@@ -143,6 +171,9 @@ public class ModelConverter {
 		return detail;
 	}
 
+	/**
+	 * フォームの試験選択情報をDTOリストに変換する。
+	 */
 	public static List<PostExamSelection> toSelectionList(PostForm form) {
 		List<PostExamSelection> list = new ArrayList<>();
 
@@ -152,15 +183,18 @@ public class ModelConverter {
 				if (form.getExamDetails() != null) {
 					detailText = form.getExamDetails().get(contentId);
 				}
-				//第一引数であるpostIdは、投稿未登録時点では存在しないため0
-				list.add(new PostExamSelection(0,contentId, detailText));
+				// 第一引数であるpostIdは、投稿未登録時点では存在しないため0
+				list.add(new PostExamSelection(0, contentId, detailText));
 			}
 		}
 		return list;
 	}
 
-	//編集初期表示系 (Load: DTO → Form)
+	// 編集初期表示系 (Load: DTO → Form)
 
+	/**
+	 * 投稿DTOと詳細DTOからフォーム初期値を構築する。
+	 */
 	public static PostForm toPostForm(Post post, PostDetail detail) {
 		PostForm form = new PostForm();
 		form.setPostId(post.getPostId());
@@ -205,10 +239,13 @@ public class ModelConverter {
 		return form;
 	}
 
-	//リクエスト解析系 (Request → Form)
+	// リクエスト解析系 (Request → Form)
 
-	//HTTPリクエストのパラメータを解析し、PostFormオブジェクトを作成する
+	// HTTPリクエストのパラメータを解析し、PostFormオブジェクトを作成する
 
+	/**
+	 * HTTPリクエストから投稿フォームを組み立てる。
+	 */
 	public static PostForm toPostForm(HttpServletRequest request) {
 		PostForm form = new PostForm();
 
@@ -261,6 +298,12 @@ public class ModelConverter {
 	}
 
 	// ヘルパーメソッド
+	/**
+	 * yyyy-MM-dd 形式の文字列を LocalDate に変換する。
+	 *
+	 * @param dateStr 日付文字列
+	 * @return 変換結果。失敗時はnull
+	 */
 	private static LocalDate parseDate(String dateStr) {
 		if (dateStr == null || dateStr.isEmpty())
 			return null;
@@ -271,6 +314,12 @@ public class ModelConverter {
 		}
 	}
 
+	/**
+	 * 数値文字列を安全に int へ変換する。
+	 *
+	 * @param numStr 数値文字列
+	 * @return 変換結果。失敗時は0
+	 */
 	private static int parseIntSafe(String numStr) {
 		if (numStr == null || numStr.isEmpty())
 			return 0;

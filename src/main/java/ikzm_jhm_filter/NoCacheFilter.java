@@ -21,6 +21,9 @@ import jakarta.servlet.http.HttpServletResponse;
 })
 public class NoCacheFilter implements Filter {
 
+	/**
+	 * 保護リソースへのレスポンスヘッダーにキャッシュ禁止を設定する。
+	 */
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 

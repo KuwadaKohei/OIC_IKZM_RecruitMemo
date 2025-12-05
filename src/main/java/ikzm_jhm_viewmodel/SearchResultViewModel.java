@@ -1,8 +1,10 @@
 package ikzm_jhm_viewmodel;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
+import ikzm_jhm_dto.PostDetail;
 
 /**
  * 検索結果一覧画面全体のビューモデル。
@@ -13,67 +15,170 @@ public class SearchResultViewModel {
 	// 検索結果のリスト
 	private List<Summary> reports;
 
-	// 必要に応じてページング情報などをここに追加
+	// ページング情報などをここに追加
 	// private int totalCount;
 	// private int currentPage;
 
+	/**
+	 * 検索結果リストを受け取るコンストラクタ。
+	 *
+	 * @param reports 検索結果概要リスト
+	 */
 	public SearchResultViewModel(List<Summary> reports) {
 		this.reports = reports;
 	}
 
+	/**
+	 * 検索結果の一覧を返す。
+	 *
+	 * @return 検索結果概要リスト
+	 */
 	public List<Summary> getReports() {
 		return reports;
 	}
 
-	//1件分の概要情報を保持する内部クラス
+	// 1件分の概要情報を保持する内部クラス
 
+	/**
+	 * 検索結果1件分の概要情報を保持する値オブジェクト。
+	 */
 	public static class Summary {
-		private int postId;
-		private int userId;
-		private int departmentId;
-		private int methodId;
-		private int recruitmentNo;
-		private String companyName;
-		private LocalDate examDate;
-		private List<Integer> selectedExamIds;
-		private Map<Integer, String> detailTexts;
+		private final int postId;
+		private final int userId;
+		private final int departmentId;
+		private final String departmentCourseName;
+		private final int recruitmentNo;
+		private final String companyName;
+		private final LocalDate examDate;
+		private final LocalDateTime createdAt;
+		private final LocalDateTime updatedAt;
+		private final PostDetail postDetail;
 
-		
-
-		public Summary(int postId, int userId, int departmentId, int methodId, int recruitmentNo, String companyName,
-				LocalDate examDate, List<Integer> selectedExamIds, Map<Integer, String> detailTexts) {
-			super();
+		/**
+		 * 1件分の概要情報を構築するコンストラクタ。
+		 *
+		 * @param postId               投稿ID
+		 * @param userId               ユーザーID
+		 * @param departmentId         学科ID
+		 * @param departmentCourseName 学科・コース名
+		 * @param recruitmentNo        求人票番号
+		 * @param companyName          企業名
+		 * @param examDate             試験日
+		 * @param createdAt            作成日時
+		 * @param updatedAt            更新日時
+		 * @param postDetail           投稿詳細情報
+		 */
+		public Summary(
+				int postId,
+				int userId,
+				int departmentId,
+				String departmentCourseName,
+				int recruitmentNo,
+				String companyName,
+				LocalDate examDate,
+				LocalDateTime createdAt,
+				LocalDateTime updatedAt,
+				PostDetail postDetail) {
 			this.postId = postId;
 			this.userId = userId;
 			this.departmentId = departmentId;
-			this.methodId = methodId;
+			this.departmentCourseName = departmentCourseName;
 			this.recruitmentNo = recruitmentNo;
 			this.companyName = companyName;
 			this.examDate = examDate;
-			this.selectedExamIds = selectedExamIds;
-			this.detailTexts = detailTexts;
+			this.createdAt = createdAt;
+			this.updatedAt = updatedAt;
+			this.postDetail = postDetail;
 		}
 
-		// --- Getters ---
+		/**
+		 * 投稿IDを返す。
+		 *
+		 * @return 投稿ID
+		 */
 		public int getPostId() {
 			return postId;
 		}
 
+		/**
+		 * 投稿者ユーザーIDを返す。
+		 *
+		 * @return 投稿者ユーザーID
+		 */
+		public int getUserId() {
+			return userId;
+		}
+
+		/**
+		 * 学科IDを返す。
+		 *
+		 * @return 学科ID
+		 */
+		public int getDepartmentId() {
+			return departmentId;
+		}
+
+		/**
+		 * 学科・コース名を返す。
+		 *
+		 * @return 学科・コース名
+		 */
+		public String getDepartmentCourseName() {
+			return departmentCourseName;
+		}
+
+		/**
+		 * 求人票番号を返す。
+		 *
+		 * @return 求人票番号
+		 */
+		public int getRecruitmentNo() {
+			return recruitmentNo;
+		}
+
+		/**
+		 * 受験企業名を返す。
+		 *
+		 * @return 受験企業名
+		 */
 		public String getCompanyName() {
 			return companyName;
 		}
 
+		/**
+		 * 試験日を返す。
+		 *
+		 * @return 試験日
+		 */
 		public LocalDate getExamDate() {
 			return examDate;
 		}
 
-		public List<Integer> getSelectedExamIds() {
-			return selectedExamIds;
+		/**
+		 * 作成日時を返す。
+		 *
+		 * @return 作成日時
+		 */
+		public LocalDateTime getCreatedAt() {
+			return createdAt;
 		}
 
-		public Map<Integer, String> getDetailTexts() {
-			return detailTexts;
+		/**
+		 * 更新日時を返す。
+		 *
+		 * @return 更新日時
+		 */
+		public LocalDateTime getUpdatedAt() {
+			return updatedAt;
 		}
-		// ... その他のGetterも必要に応じて追加 ...
+
+		/**
+		 * 投稿詳細を返す。
+		 *
+		 * @return 投稿詳細
+		 */
+		public PostDetail getPostDetail() {
+			return postDetail;
+		}
 	}
 }

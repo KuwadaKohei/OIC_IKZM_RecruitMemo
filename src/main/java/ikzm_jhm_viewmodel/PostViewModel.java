@@ -14,18 +14,18 @@ public class PostViewModel {
 	private String companyName;
 	private LocalDate examDate;
 	private String venueAddress;
-	private String departmentName; // Departmentsから取得
-	private String submissionMethodName; // SubmissionMethodsから取得
+	private String departmentName;
+	private String submissionMethodName;
 	private int recruitmentNo;
 	private int grade;
-	private String posterName; // Usersから取得 (isAnonymousフラグに応じて「匿名」または実名)
+	private String posterName;
 	//PostDetails情報
 	private LocalDate resultDate;
 	private int scheduledHires;
 	private int totalApplicants;
-	private String adviceText; // 受験のアドバイス
+	private String adviceText;
 	//試験内容の選択結果 (ExamContent, PostExamSelections)
-	private List<SelectedExamItem> selectedExams;// 選択された試験項目のリスト。JSP側でループさせて表示する。
+	private List<SelectedExamItem> selectedExams;
 
 	public PostViewModel(int postId, String companyName, LocalDate examDate, String venueAddress,
 			String departmentName, String submissionMethodName, int recruitmentNo,
@@ -161,9 +161,9 @@ public class PostViewModel {
 	}
 
 	public static class SelectedExamItem {
-		private String categoryName; // ExamContent.content_category
-		private String itemName; // ExamContent.content_name
-		private String detailText; // PostExamSelections.detail_text (専門、テーマ、人数など)
+		private String categoryName;
+		private String itemName;
+		private String detailText;
 
 		// コンストラクタ
 		public SelectedExamItem(String categoryName, String itemName, String detailText) {
