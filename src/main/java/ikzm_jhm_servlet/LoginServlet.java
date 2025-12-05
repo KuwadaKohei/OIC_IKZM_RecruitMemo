@@ -49,7 +49,7 @@ public class LoginServlet extends HttpServlet {
 			// 初回アクセスやaction=null：ログインボタン画面を表示
 			if (action == null && (code == null || code.isEmpty())) {
 
-				RequestDispatcher dispatcher = request.getRequestDispatcher("/login.jsp");
+				RequestDispatcher dispatcher = request.getRequestDispatcher("/index.jsp");
 				dispatcher.forward(request, response);
 				return;
 
@@ -105,7 +105,7 @@ public class LoginServlet extends HttpServlet {
 				if (result.isNewUser() || result.needsDepartment()) {
 					response.sendRedirect(request.getContextPath() + "/NewUser");
 				} else {
-					response.sendRedirect(request.getContextPath() + "/index.jsp");
+					response.sendRedirect(request.getContextPath() + "/ReportList");
 				}
 				return;
 			}
