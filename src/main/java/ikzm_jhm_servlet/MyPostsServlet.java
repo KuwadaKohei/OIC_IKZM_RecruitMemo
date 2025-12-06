@@ -39,7 +39,7 @@ public class MyPostsServlet extends HttpServlet {
 
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("loginUser");
-
+		
 		PostAction reportAction = new PostAction();
 		try {
 			// 検索ワードがある場合はAction内でフィルタリング処理が行われる
@@ -49,7 +49,7 @@ public class MyPostsServlet extends HttpServlet {
 			request.setAttribute("postList", viewModel);
 
 			// 遷移
-			RequestDispatcher dispatcher = request.getRequestDispatcher("/MyReports.jsp");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("/myReports.jsp");
 			dispatcher.forward(request, response);
 		} catch (Exception e) {
 			request.setAttribute("backUrl", request.getContextPath() + DEFAULT_BACK_PATH);
